@@ -21,6 +21,6 @@ int main(int argc, char* argv[])
 
     // Init SDL
     SDL_Init(SDL_INIT_EVERYTHING);
-    std::cout << "Hello, world!" << std::endl;
+    std::cout << "Vagaho Engine is running!" << std::endl;
     return 0;
 }
