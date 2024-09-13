@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VagahoEngine", "VagahoEngine\VagahoEngine.vcxproj", "{CDB52D58-9D63-42B8-9F6D-5DA77CFBADA0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CDB52D58-9D63-42B8-9F6D-5DA77CFBADA0}.Debug|x64.ActiveCfg = Debug|x64
+		{CDB52D58-9D63-42B8-9F6D-5DA77CFBADA0}.Debug|x64.Build.0 = Debug|x64
+		{CDB52D58-9D63-42B8-9F6D-5DA77CFBADA0}.Debug|x86.ActiveCfg = Debug|Win32
+		{CDB52D58-9D63-42B8-9F6D-5DA77CFBADA0}.Debug|x86.Build.0 = Debug|Win32
+		{CDB52D58-9D63-42B8-9F6D-5DA77CFBADA0}.Release|x64.ActiveCfg = Release|x64
+		{CDB52D58-9D63-42B8-9F6D-5DA77CFBADA0}.Release|x64.Build.0 = Release|x64
+		{CDB52D58-9D63-42B8-9F6D-5DA77CFBADA0}.Release|x86.ActiveCfg = Release|Win32
+		{CDB52D58-9D63-42B8-9F6D-5DA77CFBADA0}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B8EC250B-3584-448C-9199-5A404FE7B6B9}
+	EndGlobalSection
+EndGlobal
