@@ -1,6 +1,8 @@
 #include "Game.h"
 
 #include <SDL_image.h>
+#include <glm/glm.hpp>
+
 #include <iostream>
 
 
@@ -50,8 +52,13 @@ void Game::Initialize() {
 	bGameIsRunning = true;
 }
 
-void Game::Setup() {
+// temp
+glm::vec2 playerPosition;
+glm::vec2 playerVelocity;
 
+void Game::Setup() {
+	playerPosition = glm::vec2(10.0f, 10.f);
+	playerVelocity = glm::vec2(1.0f, 0.0f);
 }
 
 void Game::HandleInput() {
@@ -71,6 +78,8 @@ void Game::HandleInput() {
 }
 
 void Game::Update() {
+	playerPosition.x += playerVelocity.x;
+	playerPosition.y += playerVelocity.y;
 }
 
 void Game::Render() {
@@ -83,7 +92,12 @@ void Game::Render() {
 	SDL_FreeSurface(surface); // once the texture is created, surface is not needed anymore
 
 	// rectangle struct to draw the texture
-	SDL_Rect destinationRect = { 10, 10, 32, 32 };
+	SDL_Rect destinationRect = { 
+		static_cast<int>(playerPosition.x), 
+		static_cast<int>(playerPosition.y),
+		32, 
+		32 
+	};
 	SDL_RenderCopy(renderer, texture, NULL, &destinationRect); // NULL means we're copying the entire texture, not a subset of the texture rect (ie sprite anims)
 	SDL_DestroyTexture(texture);
 
