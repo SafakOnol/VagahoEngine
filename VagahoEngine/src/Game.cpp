@@ -8,7 +8,7 @@
 
 Game::Game() {
 	bGameIsRunning = false;
-	ticks = 0;
+	ticksPrevFrame = 0;
 	deltaTime = 0;
 	std::cout << "Game constructor called!" << std::endl;
 }
@@ -62,7 +62,16 @@ void Game::Setup() {
 	playerPosition = glm::vec2(10.0f, 10.f);
 	playerVelocity = glm::vec2(1.0f, 0.0f);
 }
+void Game::HandleFrameTime() {
+	int timeToDelay = FRAME_TIME_DURATION - (SDL_GetTicks() - ticksPrevFrame);
 
+	if (timeToDelay > 0 && timeToDelay <= FRAME_TIME_DURATION) {
+		SDL_Delay(timeToDelay);
+	}
+
+	ticksPrevFrame = SDL_GetTicks();
+
+}
 void Game::HandleInput() {
 	SDL_Event sdlEvent;
 	while (SDL_PollEvent(&sdlEvent)) {
@@ -81,9 +90,7 @@ void Game::HandleInput() {
 
 void Game::Update() {
 
-	while (!SDL_TICKS_PASSED(SDL_GetTicks(), ticks + FRAME_TIME_DURATION));
-
-	ticks = SDL_GetTicks();
+	HandleFrameTime();
 
 	playerPosition.x += playerVelocity.x;
 	playerPosition.y += playerVelocity.y;
