@@ -23,7 +23,7 @@ void Game::Initialize() {
 		SDL_WINDOWPOS_CENTERED,
 		800,
 		600,
-		SDL_WINDOW_ALWAYS_ON_TOP
+		SDL_WINDOW_BORDERLESS
 	);
 	if (!window) {
 		std::cerr << "Error creating SDL window." << std::endl;
@@ -56,6 +56,12 @@ void Game::Update() {
 }
 
 void Game::Render() {
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	SDL_RenderClear(renderer);
+
+	// TODO: Render game objects...
+
+	SDL_RenderPresent(renderer);
 }
 
 void Game::Run() {
