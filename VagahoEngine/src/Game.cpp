@@ -8,6 +8,8 @@
 
 Game::Game() {
 	bGameIsRunning = false;
+	ticks = 0;
+	deltaTime = 0;
 	std::cout << "Game constructor called!" << std::endl;
 }
 
@@ -78,6 +80,11 @@ void Game::HandleInput() {
 }
 
 void Game::Update() {
+
+	while (!SDL_TICKS_PASSED(SDL_GetTicks(), ticks + FRAME_TIME_DURATION));
+
+	ticks = SDL_GetTicks();
+
 	playerPosition.x += playerVelocity.x;
 	playerPosition.y += playerVelocity.y;
 }

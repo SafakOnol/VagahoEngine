@@ -2,10 +2,14 @@
 
 #include <SDL2/SDL.h>
 
+const int FPS = 60;
+const int FRAME_TIME_DURATION = 1000 / FPS;
 
 class Game{
 private:
 	bool bGameIsRunning;
+	int ticks;
+	float deltaTime;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 
