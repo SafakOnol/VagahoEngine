@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 
+
 class Game{
 private:
 	bool bGameIsRunning;
@@ -12,6 +13,7 @@ public:
 	Game();
 	~Game();
 	void Initialize();
+	void Setup();
 	void HandleInput();
 	void Update();
 	void Render();
