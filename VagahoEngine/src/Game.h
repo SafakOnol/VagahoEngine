@@ -17,5 +17,8 @@ public:
 	void Render();
 	void Run();
 	void Destroy();
+
+	int windowWidth;
+	int windowHeight;
 };
 

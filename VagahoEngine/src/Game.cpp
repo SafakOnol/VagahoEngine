@@ -17,12 +17,22 @@ void Game::Initialize() {
 		std::cerr << "Error initializing SDL." << std::endl;
 		return;
 	}
+
+	// Create SDL display mode struct and populate with get current display mode function
+	SDL_DisplayMode displayMode;
+	SDL_GetCurrentDisplayMode(0, &displayMode);
+	//windowWidth	= 800;
+	//windowHeight	= 600;
+
+	windowWidth		= 3440;
+	windowHeight	= 1440;
+
 	window = SDL_CreateWindow(
 		"Vagaho Engine",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		800,
-		600,
+		windowWidth,
+		windowHeight,
 		SDL_WINDOW_BORDERLESS
 	);
 	if (!window) {
@@ -33,6 +43,8 @@ void Game::Initialize() {
 		std::cerr << "Error creating SDL renderer." << std::endl;
 		return;
 	}
+	// Real Fullscreen mode (change video mode from os to app
+	SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 	bGameIsRunning = true;
 }
 
