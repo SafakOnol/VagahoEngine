@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Logger.h"
 
 #include <SDL_image.h>
 #include <glm/glm.hpp>
@@ -10,7 +11,8 @@ Game::Game() {
 	bGameIsRunning = false;
 	ticksPrevFrame = 0;
 	deltaTime = 0;
-	std::cout << "Game constructor called!" << std::endl;
+	std::cout << "INITIAL TERMINAL COLOR" << std::endl;
+	Logger::Log("Game constructor called!");
 }
 
 Game::~Game() {
@@ -20,7 +22,7 @@ Game::~Game() {
 void Game::Initialize() {
 	// Initialize SDL, window and renderer in this order
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		std::cerr << "Error initializing SDL." << std::endl;
+		LOG_ERROR("Error initializing SDL.");
 		return;
 	}
 
@@ -42,11 +44,11 @@ void Game::Initialize() {
 		SDL_WINDOW_BORDERLESS
 	);
 	if (!window) {
-		std::cerr << "Error creating SDL window." << std::endl;
+		LOG_ERROR("Error creating SDL window.");
 	}
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (!renderer) {
-		std::cerr << "Error creating SDL renderer." << std::endl;
+		LOG_ERROR("Error creating SDL renderer.");
 		return;
 	}
 	// Real Fullscreen mode (change video mode from os to app
@@ -61,6 +63,9 @@ glm::vec2 playerVelocity;
 void Game::Setup() {
 	playerPosition = glm::vec2(10.0f, 10.f);
 	playerVelocity = glm::vec2(100.0f, 0.0f);
+	LOG_INFO("This is a log");
+	LOG_WARNING("This is a warning!");
+	LOG_ERROR("This is an error!");
 }
 
 void Game::HandleFrameTime() {
