@@ -7,6 +7,9 @@
 #include <sstream>	// std::ostringstream
 #include <filesystem> // extract file name (C++17)
 
+// Initialize variables
+std::vector<LogEntry> Logger::messages;
+
 std::string Logger::GetCurrentDateTime(){
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_time = std::chrono::system_clock::to_time_t(now);
@@ -19,28 +22,39 @@ std::string Logger::GetCurrentDateTime(){
 }
 
 void Logger::Log(const std::string& message) {
-	std::cout	<< "\033[92m" 
-				<< "[LOG    ]" << "[" << GetCurrentDateTime() << "]: " 
-				<< message << "\033[0m" << std::endl;
+	LogEntry logEntry;
+	logEntry.type = INFO;
+	logEntry.message = "[INFO   ][" + GetCurrentDateTime() + "]: " + message;
+	
+	std::cout << "\033[92m" << logEntry.message << "\033[0m" << std::endl;
+
+	messages.push_back(logEntry);
 	return;
 }
 
 void Logger::Wrn(const std::string& message) {
-	std::cout	<< "\033[33m" 
-				<< "[WARNING]" << "[" << GetCurrentDateTime() << "]: " 
-				<< message << "\033[0m" << std::endl;
-				
+	LogEntry logEntry;
+	logEntry.type = WARNING;
+	logEntry.message = "[WARNING][" + GetCurrentDateTime() + "]: " + message;
+
+	std::cout	<< "\033[33m" << logEntry.message << "\033[0m" << std::endl;
+	
+	messages.push_back(logEntry);
 	return;
 }
 
 void Logger::Err(const std::string& message, const char* file, int line) {
 	std::string filename = std::filesystem::path(file).filename().string();
-	std::cout	<< "\033[31m" 
-				<< "[ERROR  ]" << "[" << GetCurrentDateTime() << "]:" 
-				<< "\033[90m"
-				<< "[File: " << filename << ", Line: " << line << "]: "
-				<< "\033[31m"
-				<< message << "\033[0m" << std::endl;
-				
+	std::string line_str = std::to_string(line);
+
+	LogEntry logEntry;
+	logEntry.type = ERROR;
+	logEntry.message =	"[ERROR  ][" + GetCurrentDateTime() + "]:" + "\033[90m" + 
+						"[File: " + filename + ", Line: " + line_str + "]: "
+						+ "\033[31m" + message;
+
+	std::cout	<< "\033[31m" << logEntry.message << "\033[0m" << std::endl;			
+	
+	messages.push_back(logEntry);
 	return;
 }
