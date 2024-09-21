@@ -21,10 +21,15 @@ std::string Logger::GetCurrentDateTime(){
 	return oss.str();
 }
 
-void Logger::Log(const std::string& message) {
+void Logger::Log(const std::string& message, const char* file, int line) {
+	std::string filename = std::filesystem::path(file).filename().string();
+	std::string line_str = std::to_string(line);
+
 	LogEntry logEntry;
 	logEntry.type = INFO;
-	logEntry.message = "[INFO   ][" + GetCurrentDateTime() + "]: " + message;
+	logEntry.message = "[INFO   ][" + GetCurrentDateTime() + "]:" + "\033[90m" +
+						"[File: " + filename + ", Line: " + line_str + "]: "
+						+ "\033[92m" + message;
 	
 	std::cout << "\033[92m" << logEntry.message << "\033[0m" << std::endl;
 
@@ -32,10 +37,15 @@ void Logger::Log(const std::string& message) {
 	return;
 }
 
-void Logger::Wrn(const std::string& message) {
+void Logger::Wrn(const std::string& message, const char* file, int line) {
+	std::string filename = std::filesystem::path(file).filename().string();
+	std::string line_str = std::to_string(line);
+
 	LogEntry logEntry;
 	logEntry.type = WARNING;
-	logEntry.message = "[WARNING][" + GetCurrentDateTime() + "]: " + message;
+	logEntry.message = "[WARNING][" + GetCurrentDateTime() + "]:" + "\033[90m" +
+						"[File: " + filename + ", Line: " + line_str + "]: "
+						+ "\033[33m" + message;
 
 	std::cout	<< "\033[33m" << logEntry.message << "\033[0m" << std::endl;
 	

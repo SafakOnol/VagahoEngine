@@ -12,7 +12,7 @@ Game::Game() {
 	ticksPrevFrame = 0;
 	deltaTime = 0;
 	std::cout << "INITIAL TERMINAL COLOR" << std::endl;
-	Logger::Log("Game constructor called!");
+	LOG_INFO("Game constructor called!");
 }
 
 Game::~Game() {
