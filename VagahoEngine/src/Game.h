@@ -5,7 +5,7 @@
 const int FPS = 60;
 const int FRAME_TIME_DURATION = 1000 / FPS;
 
-class Game{
+class Game {
 private:
 	bool bGameIsRunning;
 	int ticksPrevFrame;
