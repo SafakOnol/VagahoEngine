@@ -1,11 +1,11 @@
 #include "ECS.h"
 
-int Entity::GetID() const
+int Entity::GetId() const
 {
     return id;
 }
 
-int Component::GetID() const
+int Component::GetId() const
 {
     return id;
 }
@@ -23,7 +23,7 @@ std::vector<Entity> System::GetSystemEntities() const
     return std::vector<Entity>();
 }
 
-Signature& System::GetComponentSignature() const
+const Signature& System::GetComponentSignature() const
 {
     // TODO: insert return statement here
 }

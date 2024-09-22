@@ -19,16 +19,24 @@ private:
 
 public:
 	Entity(int id) : id(id) {};
-	int GetID() const;
+	int GetId() const;
 	// ...
 };
 
-class Component {
-private:
-	int id;
+// Base component similar to an Interface, hens the I... naming convention similar to Unity
+struct IComponent {
+protected:
+	static int nexId;
+};
 
-public:
-	int GetID() const;
+// assign a unique id to a component type
+template <typename T>
+class Component: public IComponent {
+	// return the unique id of Component<T>
+	static int GetId() {
+		static auto id = nextId++;
+		return id;
+	}
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -40,14 +48,25 @@ private:
 	std::vector<Entity> entities;
 public:
 	System() = default;
-	~System() = default;
+	virtual ~System() = default;
 
 	void AddEntityToSystem(Entity entity);
 	void RemoveEntityFromSystem(Entity entity);
 	std::vector<Entity> GetSystemEntities() const;
-	Signature& GetComponentSignature() const;
+	const Signature& GetComponentSignature() const;
+
+	// Define the component type T that entities must have
+	template <typename TComponent> void ReqiureComponent();
 };
 
 class EntityManager {
 	// TODO...
 };
+
+/// IMPLEMENTATION
+
+template <typename TComponent>
+void System::ReqiureComponent() {
+	const auto componentId = Component<TComponent>::GetId();
+	componentSignature.set(componentId);
+}
