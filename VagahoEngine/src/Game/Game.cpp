@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "../Logger/Logger.h"
+#include "../ECS/ECS.h"
 
 #include <SDL_image.h>
 #include <glm/glm.hpp>
@@ -56,16 +57,13 @@ void Game::Initialize() {
 	bGameIsRunning = true;
 }
 
-// temp
-glm::vec2 playerPosition;
-glm::vec2 playerVelocity;
+
 
 void Game::Setup() {
-	playerPosition = glm::vec2(10.0f, 10.f);
-	playerVelocity = glm::vec2(100.0f, 0.0f);
-	LOG_INFO("This is a log");
-	LOG_WARNING("This is a warning!");
-	LOG_ERROR("This is an error!");
+	// TODO:
+	// Entity enemy = registry.CreateEntity();
+	// tank.AddComponent<TransformCOmponent>();
+	// ...
 }
 
 void Game::HandleFrameTime() {
@@ -103,28 +101,31 @@ void Game::Update() {
 
 	HandleFrameTime();
 
-	playerPosition.x += playerVelocity.x * deltaTime;
-	playerPosition.y += playerVelocity.y * deltaTime;
+	// TODO:
+	// MovementSystem.Update();
+	// CollisionSystem.Update();
 }
 
 void Game::Render() {
 	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 	SDL_RenderClear(renderer);
 
-	// Draw a PNG texture
-	SDL_Surface* surface = IMG_Load("./assets/images/tank-tiger-right.png");
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_FreeSurface(surface); // once the texture is created, surface is not needed anymore
+	// TODO: Render game objects...
 
-	// rectangle struct to draw the texture
-	SDL_Rect destinationRect = { 
-		static_cast<int>(playerPosition.x), 
-		static_cast<int>(playerPosition.y),
-		32, 
-		32 
-	};
-	SDL_RenderCopy(renderer, texture, NULL, &destinationRect); // NULL means we're copying the entire texture, not a subset of the texture rect (ie sprite anims)
-	SDL_DestroyTexture(texture);
+	//// Draw a PNG texture
+	//SDL_Surface* surface = IMG_Load("./assets/images/tank-tiger-right.png");
+	//SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+	//SDL_FreeSurface(surface); // once the texture is created, surface is not needed anymore
+
+	//// rectangle struct to draw the texture
+	//SDL_Rect destinationRect = { 
+	//	static_cast<int>(playerPosition.x), 
+	//	static_cast<int>(playerPosition.y),
+	//	32, 
+	//	32 
+	//};
+	//SDL_RenderCopy(renderer, texture, NULL, &destinationRect); // NULL means we're copying the entire texture, not a subset of the texture rect (ie sprite anims)
+	//SDL_DestroyTexture(texture);
 
 	SDL_RenderPresent(renderer);
 }
