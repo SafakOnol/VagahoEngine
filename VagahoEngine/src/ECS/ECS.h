@@ -13,6 +13,10 @@ const unsigned int MAX_COMPONENTS = 32;
 ///////////////////////////////////////////////
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
+
+///////////////
+/// ENTITY
+///////////////
 class Entity {
 private:
 	int id;
@@ -23,10 +27,14 @@ public:
 	// ...
 };
 
+///////////////
+/// COMPONENT
+///////////////
+
 // Base component similar to an Interface, hens the I... naming convention similar to Unity
 struct IComponent {
 protected:
-	static int nexId;
+	static int nextId;
 };
 
 // assign a unique id to a component type
@@ -40,6 +48,8 @@ class Component: public IComponent {
 };
 
 ///////////////////////////////////////////////////////////////////
+/// SYSTEM
+///////////////////////////////////////////////////////////////////
 /// The System processes entities that contain a specific signature
 ///////////////////////////////////////////////////////////////////
 class System {
@@ -48,7 +58,7 @@ private:
 	std::vector<Entity> entities;
 public:
 	System() = default;
-	virtual ~System() = default;
+	~System() = default;
 
 	void AddEntityToSystem(Entity entity);
 	void RemoveEntityFromSystem(Entity entity);
