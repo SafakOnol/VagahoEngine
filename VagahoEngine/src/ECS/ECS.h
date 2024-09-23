@@ -2,6 +2,17 @@
 
 #include <bitset>
 #include <vector>
+#include <unordered_map>
+#include <typeindex>
+#include <cstdint>
+#include <set>
+
+
+
+using EntityId		= uint32_t;
+using ComponentId	= uint32_t;
+constexpr EntityId INVALID_ENTITY_ID		= std::numeric_limits<EntityId>::max();
+constexpr ComponentId INVALID_COMPONENT_ID	= std::numeric_limits<ComponentId>::max();
 
 const unsigned int MAX_COMPONENTS = 32;
 
@@ -13,18 +24,17 @@ const unsigned int MAX_COMPONENTS = 32;
 ///////////////////////////////////////////////
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
-
 ///////////////
 /// ENTITY
 ///////////////
 class Entity {
 private:
-	int id;
+	EntityId id;
 
 public:
-	Entity(int id) : id(id) {}; // Constructor using id
+	Entity(EntityId id) : id(id) {}; // Constructor using id
 	Entity(const Entity& entity) = default;
-	int GetId() const;
+	EntityId GetId() const;
 	
 	// overload & create default assignment operator
 	Entity& operator =(const Entity& other) = default;
@@ -44,14 +54,14 @@ public:
 // Base component similar to an Interface, hens the I... naming convention similar to Unity
 struct IComponent {
 protected:
-	static int nextId;
+	static ComponentId nextId;
 };
 
 // assign a unique id to a component type
 template <typename T>
 class Component: public IComponent {
 	// return the unique id of Component<T>
-	static int GetId() {
+	static ComponentId GetId() {
 		static auto id = nextId++;
 		return id;
 	}
@@ -144,14 +154,37 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class ECSManager {
 private:
-	int numEntities = 0;
+	uint32_t numEntities = 0;
+
+	// set if entities to be added or removed in the next registry Update()
+	std::set<Entity> entitiesToCreate;
+	std::set<Entity> entitiesToDestroy;
+
 
 	// Vector of component pools, each pool contains all the data for certain a component type
-	// Vector index = component type id
-	// Pool index = entity id
+	// [Vector index = component type id]
+	// [Pool index = entity id]
 	// By using IPool, a parent class to Pool (similar to an interface) we are bypassing the requirement
 	// of specifying the type of the pool (<T>).
 	std::vector<IPool*> componentPools;
+
+	// Vector of component signatures per entity
+	// specifies whith compoenents are turend on for that entity
+	// [Vector index = entityid]
+	std::vector<Signature> entityComponentSignatures;
+
+	std::unordered_map<std::type_index, System*> systems;
+
+public:
+	ECSManager() = default;
+	void Update();
+
+	Entity CreateEntity();
+	void AddEntityToSystem(Entity entity);
+	
+
+	// TODO:
+	
 };
 
 /// IMPLEMENTATION

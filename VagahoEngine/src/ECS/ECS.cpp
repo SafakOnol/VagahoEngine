@@ -1,18 +1,15 @@
 #include "ECS.h"
+#include "../Logger/Logger.h"
 
-
-int Entity::GetId() const
-{
+EntityId Entity::GetId() const {
     return id;
 }
 
-void System::AddEntityToSystem(Entity entity)
-{
+void System::AddEntityToSystem(Entity entity) {
     entities.push_back(entity);
 }
 
-void System::RemoveEntityFromSystem(Entity entity)
-{
+void System::RemoveEntityFromSystem(Entity entity) {
     ////////////////////
     /// Modern C++ flex
     ////////////////////
@@ -54,12 +51,25 @@ void System::RemoveEntityFromSystem(Entity entity)
 
 }
 
-std::vector<Entity> System::GetSystemEntities() const
-{
+std::vector<Entity> System::GetSystemEntities() const {
     return entities;
 }
 
-const Signature& System::GetComponentSignature() const
-{
+const Signature& System::GetComponentSignature() const {
     return componentSignature;
+}
+
+Entity ECSManager::CreateEntity() {
+    EntityId entityId;
+    entityId = numEntities++;
+
+    Entity entity(entityId);
+    entitiesToCreate.insert(entity);
+    return entity;
+
+    LOG_INFO("Entity created with id = " + std::to_string(entityId));
+}
+
+void ECSManager::Update() {
+    // TODO..
 }
