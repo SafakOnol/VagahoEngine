@@ -79,8 +79,79 @@ public:
 	template <typename TComponent> void ReqiureComponent();
 };
 
-class EntityManager {
-	// TODO...
+/////////////////////////////////////////////////////////////
+/// Pool
+/////////////////////////////////////////////////////////////
+/// A pool is a vector (contiguous data) of objects of type T 
+/////////////////////////////////////////////////////////////
+class IPool {
+public:
+	virtual ~IPool(){
+
+	}
+};
+
+template <typename T>
+class Pool : public IPool {
+private:
+	std::vector<T> data;
+
+public:
+	Pool(int size = 100) {
+		data.resize(size);
+	}
+
+	virtual ~Pool() = default;
+
+	bool isEmpty() const{
+		return data.empty();
+	}
+
+	int GetSize() const {
+		return data.size();
+	}
+
+	void Resize(int n) {
+		data.resize(n);
+	}
+
+	void Clear() {
+		data.clear();
+	}
+
+	void Add(T object) {
+		data.push_back(object);
+	}
+
+	void Set(int index, T object) {
+		data[index] = object;
+	}
+
+	T& Get(int index) {
+		return static_cast<T&>(data[index]);
+	}
+
+	T& operator [](unsigned int index) {
+		return data[index];
+	}
+
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// ECS MANAGER
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// ECS Manager is in charge of creation and destruction of entities, adding and removing systems and components
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class ECSManager {
+private:
+	int numEntities = 0;
+
+	// Vector of component pools, each pool contains all the data for certain a component type
+	// Vector index = component type id
+	// Pool index = entity id
+	// By using IPool, a parent class to Pool (similar to an interface) we are bypassing the requirement
+	// of specifying the type of the pool (<T>).
+	std::vector<IPool*> componentPools;
 };
 
 /// IMPLEMENTATION
