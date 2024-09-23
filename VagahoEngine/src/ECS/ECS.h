@@ -22,9 +22,19 @@ private:
 	int id;
 
 public:
-	Entity(int id) : id(id) {};
+	Entity(int id) : id(id) {}; // Constructor using id
+	Entity(const Entity& entity) = default;
 	int GetId() const;
-	// ...
+	
+	// overload & create default assignment operator
+	Entity& operator =(const Entity& other) = default;
+
+	// overload operators to compare ids.
+	bool operator ==(const Entity& other) const { return id == other.id; }
+	bool operator !=(const Entity& other) const { return id != other.id; }
+	bool operator >(const Entity& other) const { return id > other.id; }
+	bool operator <(const Entity& other) const { return id < other.id; }
+
 };
 
 ///////////////
