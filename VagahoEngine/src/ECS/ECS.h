@@ -86,7 +86,7 @@ public:
 	const Signature& GetComponentSignature() const;
 
 	// Define the component type T that entities must have
-	template <typename TComponent> void ReqiureComponent();
+	template <typename TComponent> void AddRequiredComponent();
 };
 
 /////////////////////////////////////////////////////////////
@@ -117,6 +117,7 @@ public:
 		return data.empty();
 	}
 
+	// Get pool size (entities in a component pool)
 	int GetSize() const {
 		return data.size();
 	}
@@ -129,10 +130,12 @@ public:
 		data.clear();
 	}
 
+	// Add entity to a component pool vector (the list of entities that has this very component)
 	void Add(T object) {
 		data.push_back(object);
 	}
 
+	// Set the new entity in the pool vector to a specific index
 	void Set(int index, T object) {
 		data[index] = object;
 	}
@@ -154,7 +157,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class ECSManager {
 private:
-	uint32_t numEntities = 0;
+	EntityId entityCount = 0;
 
 	// set if entities to be added or removed in the next registry Update()
 	std::set<Entity> entitiesToCreate;
@@ -179,18 +182,60 @@ public:
 	ECSManager() = default;
 	void Update();
 
+	/// Entity Functions
 	Entity CreateEntity();
 	void AddEntityToSystem(Entity entity);
 	
+	/// Component Functions
 
-	// TODO:
+	// Add a component of type TComponent to an entity
+	template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
 	
 };
 
 /// IMPLEMENTATION
 
-template <typename TComponent>
-void System::ReqiureComponent() {
-	const auto componentId = Component<TComponent>::GetId();
+template<typename TComponent>
+inline void System::AddRequiredComponent() {
+	const auto componentId = (Component<TComponent>)::GetId();
 	componentSignature.set(componentId);
 }
+
+template<typename TComponent, typename ...TArgs>
+inline void ECSManager::AddComponent(Entity entity, TArgs && ...args)
+{
+	const auto componentId = (Component<TComponent>)::GetId();
+	const auto entityId = entity.GetId();
+
+	// check if componentId is greater than the current size of componentPools
+	// resize the pools vector if required
+	if (componentId >= componentPools.size()) {
+		componentPools.resize(componentId + 1, nullptr);
+	}
+
+	// if component type doesn't have its own pool, create one
+	if (!componentPools[componentId]) {
+		Pool<TComponent>* newComponentPool = new Pool <TComponent>;
+		componentPools[componentId] = newComponentPool;
+	}
+
+	// Fetch the pool of component values for that component type
+	Pool<TComponent>* componentPool = componentPools[componentId];
+
+	// Check if the entity id is greater than the current size of the component pool
+	// resize the pool if required
+	if (entityId >= componentPool->GetSize()) {
+		componentPool->Resize(entityCount);
+	}
+
+	// Create a new Component object of the type TComponent and forward the parameters to the constructor
+	TComponent newComponent(std::forward<TArgs>(args)...);
+
+	// Add the new component to the component pool list, using the entity id as index
+	componentPool->Set(entityId, newComponent);
+	
+	// Change the component signature of the entity and set componenId on the bitset to 1
+	entityComponentSignatures[entityId].set(componentId);
+}
+
+

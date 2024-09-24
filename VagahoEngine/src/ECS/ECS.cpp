@@ -1,7 +1,7 @@
 #include "ECS.h"
 #include "../Logger/Logger.h"
 
-EntityId Entity::GetId() const {
+EntityId Entity::GetEntityId() const {
     return id;
 }
 
@@ -48,7 +48,6 @@ void System::RemoveEntityFromSystem(Entity entity) {
         entities.pop_back();
     }*/
 
-
 }
 
 std::vector<Entity> System::GetSystemEntities() const {
@@ -61,7 +60,7 @@ const Signature& System::GetComponentSignature() const {
 
 Entity ECSManager::CreateEntity() {
     EntityId entityId;
-    entityId = numEntities++;
+    entityId = entityCount++;
 
     Entity entity(entityId);
     entitiesToCreate.insert(entity);
