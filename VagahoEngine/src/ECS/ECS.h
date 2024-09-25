@@ -113,19 +113,20 @@ public:
 
 	virtual ~Pool() = default;
 
-	bool isEmpty() const{
+	bool bIsComponentPoolEmpty() const{
 		return data.empty();
 	}
 
 	// Get pool size (entities in a component pool)
-	int GetSize() const {
+	int GetComponentPoolSize() const {
 		return data.size();
 	}
 
-	void Resize(int n) {
+	void ResizeComponentPool(int n) {
 		data.resize(n);
 	}
 
+	/// TODO: find a better name for Clear and Add, make them more readable.
 	void Clear() {
 		data.clear();
 	}
@@ -136,11 +137,11 @@ public:
 	}
 
 	// Set the new entity in the pool vector to a specific index
-	void Set(int index, T object) {
+	void SetComponentToEntityId(int index, T object) {
 		data[index] = object;
 	}
 
-	T& Get(int index) {
+	T& GetComponentForEntityId(int index) {
 		return static_cast<T&>(data[index]);
 	}
 
@@ -190,6 +191,12 @@ public:
 
 	// Add a component of type TComponent to an entity
 	template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
+
+	// Remove a component of type TComponent from an entity
+	template <typename TComponent> void RemoveComponent(Entity entity);
+
+	// Check if a certain component is attached to a certain entity
+	template <typename TComponent> bool bHasComponent(Entity entity);
 	
 };
 
@@ -225,17 +232,36 @@ inline void ECSManager::AddComponent(Entity entity, TArgs && ...args)
 	// Check if the entity id is greater than the current size of the component pool
 	// resize the pool if required
 	if (entityId >= componentPool->GetSize()) {
-		componentPool->Resize(entityCount);
+		componentPool->ResizeComponentPool(entityCount);
 	}
 
 	// Create a new Component object of the type TComponent and forward the parameters to the constructor
 	TComponent newComponent(std::forward<TArgs>(args)...);
 
 	// Add the new component to the component pool list, using the entity id as index
-	componentPool->Set(entityId, newComponent);
+	componentPool->SetComponentToEntityId(entityId, newComponent);
 	
 	// Change the component signature of the entity and set componenId on the bitset to 1
 	entityComponentSignatures[entityId].set(componentId);
+}
+
+template<typename TComponent>
+inline void ECSManager::RemoveComponent(Entity entity) {
+	const auto componentId = (Component<TComponent>)::GetId();
+	const auto entityId = entity.GetId();
+
+	entityComponentSignatures[entityId].set(componentId, false);
+}
+
+template<typename TComponent>
+inline bool ECSManager::bHasComponent(Entity entity)
+{
+	const auto componentId = (Component<TComponent>)::GetId();
+	const auto entityId = entity.GetId();
+
+	// test checks if componentId at the specific entityId is turned on in the bitset
+	return entityComponentSignatures[entityId].test(componentId);
+
 }
 
 

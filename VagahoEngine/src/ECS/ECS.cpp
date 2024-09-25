@@ -1,7 +1,7 @@
 #include "ECS.h"
 #include "../Logger/Logger.h"
 
-EntityId Entity::GetEntityId() const {
+EntityId Entity::GetId() const {
     return id;
 }
 
