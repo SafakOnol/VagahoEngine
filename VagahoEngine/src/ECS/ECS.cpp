@@ -1,6 +1,8 @@
 #include "ECS.h"
 #include "../Logger/Logger.h"
 
+ComponentId IComponent::nextId = 0;
+
 EntityId Entity::GetId() const {
     return id;
 }
@@ -67,6 +69,23 @@ Entity ECSManager::CreateEntity() {
     return entity;
 
     LOG_INFO("Entity created with id = " + std::to_string(entityId));
+}
+
+void ECSManager::AddEntityToSystems(Entity entity) {
+    const auto entityId = entity.GetId();
+    const auto& entityComponentSignature = entityComponentSignatures[entityId];
+
+    for (auto system : systems) {
+        const auto& sytemComponentSignature = system.second->GetComponentSignature();
+
+        // bitwise sorcery
+        bool isInterested = (entityComponentSignature & sytemComponentSignature) == sytemComponentSignature;
+
+        if (isInterested) {
+            system.second->AddEntityToSystem(entity);
+        }
+    }
+
 }
 
 void ECSManager::Update() {

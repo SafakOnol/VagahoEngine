@@ -6,6 +6,7 @@
 #include <typeindex>
 #include <cstdint>
 #include <set>
+#include <memory>
 
 
 
@@ -52,12 +53,12 @@ public:
 ///////////////
 
 // Base component similar to an Interface, hens the I... naming convention similar to Unity
-struct IComponent {
+class IComponent {
 protected:
 	static ComponentId nextId;
 };
 
-// assign a unique id to a component type
+// template component class, create an Id if being called for the first time, or return the id if it's already created
 template <typename T>
 class Component: public IComponent {
 	// return the unique id of Component<T>
@@ -163,15 +164,12 @@ private:
 	// set if entities to be added or removed in the next registry Update()
 	std::set<Entity> entitiesToCreate;
 	std::set<Entity> entitiesToDestroy;
-
-
 	// Vector of component pools, each pool contains all the data for certain a component type
 	// [Vector index = component type id]
 	// [Pool index = entity id]
 	// By using IPool, a parent class to Pool (similar to an interface) we are bypassing the requirement
 	// of specifying the type of the pool (<T>).
 	std::vector<IPool*> componentPools;
-
 	// Vector of component signatures per entity
 	// specifies whith compoenents are turend on for that entity
 	// [Vector index = entityid]
@@ -185,22 +183,33 @@ public:
 
 	/// Entity Functions
 	Entity CreateEntity();
-	void AddEntityToSystem(Entity entity);
+
+	// Check the component signature of an entity and add the entity to the interested system
+	void AddEntityToSystems(Entity entity);
+
+
 	
 	/// Component Functions
-
 	// Add a component of type TComponent to an entity
 	template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
-
 	// Remove a component of type TComponent from an entity
 	template <typename TComponent> void RemoveComponent(Entity entity);
-
 	// Check if a certain component is attached to a certain entity
-	template <typename TComponent> bool bHasComponent(Entity entity);
+	template <typename TComponent> bool bHasComponent(Entity entity) const;
+
+	/// System Functions
+	template <typename TSystem, typename ...TArgs> void AddSystem(TArgs&& ...args);
+	template <typename TSystem> void RemoveSystem();
+	template <typename TSystem> bool bHasSystem() const;
+	template <typename TSystem> TSystem& GetSystem() const;
 	
 };
 
-/// IMPLEMENTATION
+/// IMPLEMENTATION ///////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////
+/// COMPONENT TEMPLATES
+///////////////////////
 
 template<typename TComponent>
 inline void System::AddRequiredComponent() {
@@ -249,19 +258,50 @@ template<typename TComponent>
 inline void ECSManager::RemoveComponent(Entity entity) {
 	const auto componentId = (Component<TComponent>)::GetId();
 	const auto entityId = entity.GetId();
-
 	entityComponentSignatures[entityId].set(componentId, false);
 }
 
 template<typename TComponent>
-inline bool ECSManager::bHasComponent(Entity entity)
-{
+inline bool ECSManager::bHasComponent(Entity entity) const {
 	const auto componentId = (Component<TComponent>)::GetId();
 	const auto entityId = entity.GetId();
-
 	// test checks if componentId at the specific entityId is turned on in the bitset
 	return entityComponentSignatures[entityId].test(componentId);
+}
 
+
+////////////////////
+/// SYSTEM TEMPLATES
+////////////////////
+
+template<typename TSystem, typename ...TArgs>
+inline void ECSManager::AddSystem(TArgs && ...args) {
+	TSystem* newSystem = new TSystem(std::forward<TArgs>(args)...);
+	/// - my eyese are burning...
+	// typeid is a modern C++ function that allows us to get the id of a system from Template
+	// type index is the key to the newSystem value
+	// Modern C++ syntax baby! 
+	systems.insert(std::make_pair(std::type_index(typeid(TSystem)), newSystem));
+}
+
+template<typename TSystem>
+inline void ECSManager::RemoveSystem() {
+	auto system = systems.find(std::type_index(typeid(TSystem)));
+	systems.erase(system);
+}
+
+template<typename TSystem>
+inline bool ECSManager::bHasSystem() const
+{
+	return systems.find(std::type_index(typeid(TSystem))) != systems.end();	
+}
+
+template<typename TSystem>
+inline TSystem& ECSManager::GetSystem() const
+{
+	auto system = systems.find(std::type_index(typeid(TSystem)));
+	// return *(std::static_pointer_cast<TSystem>(system->second));
+	return *(static_cast<TSystem*>(system->second));
 }
 
 
