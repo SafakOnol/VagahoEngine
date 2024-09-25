@@ -1,18 +1,17 @@
 #include "ECS.h"
+#include "../Logger/Logger.h"
 
+ComponentId IComponent::nextId = 0;
 
-int Entity::GetId() const
-{
+EntityId Entity::GetId() const {
     return id;
 }
 
-void System::AddEntityToSystem(Entity entity)
-{
+void System::AddEntityToSystem(Entity entity) {
     entities.push_back(entity);
 }
 
-void System::RemoveEntityFromSystem(Entity entity)
-{
+void System::RemoveEntityFromSystem(Entity entity) {
     ////////////////////
     /// Modern C++ flex
     ////////////////////
@@ -51,15 +50,44 @@ void System::RemoveEntityFromSystem(Entity entity)
         entities.pop_back();
     }*/
 
-
 }
 
-std::vector<Entity> System::GetSystemEntities() const
-{
+std::vector<Entity> System::GetSystemEntities() const {
     return entities;
 }
 
-const Signature& System::GetComponentSignature() const
-{
+const Signature& System::GetComponentSignature() const {
     return componentSignature;
+}
+
+Entity ECSManager::CreateEntity() {
+    EntityId entityId;
+    entityId = entityCount++;
+
+    Entity entity(entityId);
+    entitiesToCreate.insert(entity);
+    return entity;
+
+    LOG_INFO("Entity created with id = " + std::to_string(entityId));
+}
+
+void ECSManager::AddEntityToSystems(Entity entity) {
+    const auto entityId = entity.GetId();
+    const auto& entityComponentSignature = entityComponentSignatures[entityId];
+
+    for (auto system : systems) {
+        const auto& sytemComponentSignature = system.second->GetComponentSignature();
+
+        // bitwise sorcery
+        bool isInterested = (entityComponentSignature & sytemComponentSignature) == sytemComponentSignature;
+
+        if (isInterested) {
+            system.second->AddEntityToSystem(entity);
+        }
+    }
+
+}
+
+void ECSManager::Update() {
+    // TODO..
 }
