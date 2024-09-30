@@ -8,6 +8,7 @@
 #include <set>
 #include <memory>
 
+#include "../Logger/Logger.h"
 
 
 using EntityId		= uint32_t;
@@ -169,16 +170,20 @@ private:
 	// [Pool index = entity id]
 	// By using IPool, a parent class to Pool (similar to an interface) we are bypassing the requirement
 	// of specifying the type of the pool (<T>).
-	std::vector<IPool*> componentPools;
+	std::vector<std::shared_ptr<IPool>> componentPools;
 	// Vector of component signatures per entity
 	// specifies whith compoenents are turend on for that entity
 	// [Vector index = entityid]
 	std::vector<Signature> entityComponentSignatures;
 
-	std::unordered_map<std::type_index, System*> systems;
+	std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
 
 public:
-	ECSManager() = default;
+	// ECSManager() = default;
+	ECSManager() { LOG_INFO("ECSManager constructor called!"); }
+	~ECSManager() { LOG_INFO("ECSManager destructor called!"); }
+
+
 	void Update();
 
 	/// Entity Functions
@@ -231,12 +236,12 @@ inline void ECSManager::AddComponent(Entity entity, TArgs && ...args)
 
 	// if component type doesn't have its own pool, create one
 	if (!componentPools[componentId]) {
-		Pool<TComponent>* newComponentPool = new Pool <TComponent>;
+		std::shared_ptr<Pool<TComponent>> newComponentPool = std::make_shared<Pool<TComponent>>();
 		componentPools[componentId] = newComponentPool;
 	}
 
 	// Fetch the pool of component values for that component type
-	Pool<TComponent>* componentPool = componentPools[componentId];
+	std::shared_ptr<Pool<TComponent>> componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
 
 	// Check if the entity id is greater than the current size of the component pool
 	// resize the pool if required
@@ -276,7 +281,7 @@ inline bool ECSManager::bHasComponent(Entity entity) const {
 
 template<typename TSystem, typename ...TArgs>
 inline void ECSManager::AddSystem(TArgs && ...args) {
-	TSystem* newSystem = new TSystem(std::forward<TArgs>(args)...);
+	std::shared_ptr<TSystem> newSystem = std::make_shared<TSystem>(std::forward<TArgs>(args)...);
 	/// - my eyese are burning...
 	// typeid is a modern C++ function that allows us to get the id of a system from Template
 	// type index is the key to the newSystem value

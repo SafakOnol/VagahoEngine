@@ -13,7 +13,7 @@ Game::Game() {
 	ticksPrevFrame = 0;
 	deltaTime = 0;
 
-	ecsManager = new ECSManager;
+	ecsManager = std::make_unique<ECSManager>();
 
 	std::cout << "INITIAL TERMINAL COLOR" << std::endl;
 	LOG_INFO("Game constructor called!");

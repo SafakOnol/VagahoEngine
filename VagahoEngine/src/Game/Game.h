@@ -15,7 +15,8 @@ private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 
-	ECSManager* ecsManager;
+	std::unique_ptr<ECSManager> ecsManager;
+	
 
 public:
 	Game();
