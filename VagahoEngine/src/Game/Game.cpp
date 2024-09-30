@@ -12,12 +12,15 @@ Game::Game() {
 	bGameIsRunning = false;
 	ticksPrevFrame = 0;
 	deltaTime = 0;
+
+	ecsManager = new ECSManager;
+
 	std::cout << "INITIAL TERMINAL COLOR" << std::endl;
 	LOG_INFO("Game constructor called!");
 }
 
 Game::~Game() {
-	std::cout << "Game destructor called!" << std::endl;
+	LOG_INFO("Game destructor called!");
 }
 
 void Game::Initialize() {
@@ -64,6 +67,9 @@ void Game::Setup() {
 	// Entity enemy = registry.CreateEntity();
 	// tank.AddComponent<TransformCOmponent>();
 	// ...
+	Entity tank = ecsManager->CreateEntity();
+	Entity truck = ecsManager->CreateEntity();
+
 }
 
 void Game::HandleFrameTime() {
