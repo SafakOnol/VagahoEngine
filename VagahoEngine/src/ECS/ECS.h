@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <set>
 #include <memory>
+#include <algorithm>
 
 #include "../Logger/Logger.h"
 
@@ -34,7 +35,7 @@ private:
 	EntityId id;
 
 public:
-	Entity(EntityId id) : id(id) {}; // Constructor using id
+	Entity(EntityId id) : id(id) {} // Constructor using id
 	Entity(const Entity& entity) = default;
 	EntityId GetId() const;
 	
@@ -62,6 +63,7 @@ protected:
 // template component class, create an Id if being called for the first time, or return the id if it's already created
 template <typename T>
 class Component: public IComponent {
+public:
 	// return the unique id of Component<T>
 	static ComponentId GetId() {
 		static auto id = nextId++;
@@ -218,14 +220,14 @@ public:
 
 template<typename TComponent>
 inline void System::AddRequiredComponent() {
-	const auto componentId = (Component<TComponent>)::GetId();
+	const auto componentId = Component<TComponent>::GetId();
 	componentSignature.set(componentId);
 }
 
 template<typename TComponent, typename ...TArgs>
 inline void ECSManager::AddComponent(Entity entity, TArgs && ...args)
 {
-	const auto componentId = (Component<TComponent>)::GetId();
+	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
 
 	// check if componentId is greater than the current size of componentPools
@@ -245,8 +247,8 @@ inline void ECSManager::AddComponent(Entity entity, TArgs && ...args)
 
 	// Check if the entity id is greater than the current size of the component pool
 	// resize the pool if required
-	if (entityId >= componentPool->GetSize()) {
-		componentPool->ResizeComponentPool(entityCount);
+	if (entityId >= componentPool->GetComponentPoolSize()) {
+		componentPool->ResizeComponentPool(entityId + 1);
 	}
 
 	// Create a new Component object of the type TComponent and forward the parameters to the constructor
@@ -257,18 +259,20 @@ inline void ECSManager::AddComponent(Entity entity, TArgs && ...args)
 	
 	// Change the component signature of the entity and set componenId on the bitset to 1
 	entityComponentSignatures[entityId].set(componentId);
+
+	LOG_INFO("Component id = " + std::to_string(componentId) + " was added to entity id " + std::to_string(entityId));
 }
 
 template<typename TComponent>
 inline void ECSManager::RemoveComponent(Entity entity) {
-	const auto componentId = (Component<TComponent>)::GetId();
+	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
 	entityComponentSignatures[entityId].set(componentId, false);
 }
 
 template<typename TComponent>
 inline bool ECSManager::bHasComponent(Entity entity) const {
-	const auto componentId = (Component<TComponent>)::GetId();
+	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
 	// test checks if componentId at the specific entityId is turned on in the bitset
 	return entityComponentSignatures[entityId].test(componentId);
@@ -305,8 +309,7 @@ template<typename TSystem>
 inline TSystem& ECSManager::GetSystem() const
 {
 	auto system = systems.find(std::type_index(typeid(TSystem)));
-	// return *(std::static_pointer_cast<TSystem>(system->second));
-	return *(static_cast<TSystem*>(system->second));
+	return *(std::static_pointer_cast<TSystem>(system->second));
 }
 
 

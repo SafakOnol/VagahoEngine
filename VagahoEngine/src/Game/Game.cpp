@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "../Logger/Logger.h"
 #include "../ECS/ECS.h"
+#include "../Components/TransformComponent.h"
+#include "../Components/RigidbodyComponent.h"
 
 #include <SDL_image.h>
 #include <glm/glm.hpp>
@@ -67,8 +69,10 @@ void Game::Setup() {
 	// Entity enemy = registry.CreateEntity();
 	// tank.AddComponent<TransformCOmponent>();
 	// ...
-	Entity tank = ecsManager->CreateEntity();
-	Entity truck = ecsManager->CreateEntity();
+	Entity entity01 = ecsManager->CreateEntity();
+
+	ecsManager->AddComponent<TransformComponent>(entity01, glm::vec2(20.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
+	ecsManager->AddComponent<RigidbodyComponent>(entity01, glm::vec2(10.0, 0.0));
 
 }
 
