@@ -75,18 +75,18 @@ void Game::Setup() {
 	ecsManager->AddSystem<RenderSystem>();
 
 	// Add assets to asset manager
-	assetManager->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-left.png");
+	assetManager->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
 	assetManager->AddTexture(renderer, "chopper-image", "./assets/images/chopper.png");
 
 	Entity entity01 = ecsManager->CreateEntity();
-	entity01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
-	entity01.AddComponent<RigidbodyComponent>(glm::vec2(10.0, 10.0));	
-	entity01.AddComponent<SpriteComponent>("tank-image", 10, 10);
+	entity01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(2.0, 2.0), 90.0);
+	entity01.AddComponent<RigidbodyComponent>(glm::vec2(20.0, 0.0));	
+	entity01.AddComponent<SpriteComponent>("tank-image");
 
 	Entity entity02 = ecsManager->CreateEntity();
-	entity02.AddComponent<TransformComponent>(glm::vec2(520.0, 220.0), glm::vec2(1.0, 1.0), 0.0);
+	entity02.AddComponent<TransformComponent>(glm::vec2(520.0, 220.0), glm::vec2(2.0, 2.0), 0.0);
 	entity02.AddComponent<RigidbodyComponent>(glm::vec2(-30.0, 10.0));
-	entity02.AddComponent<SpriteComponent>("chopper-image", 20, 5);
+	entity02.AddComponent<SpriteComponent>("chopper-image", 32, 32);
 
 }
 
@@ -144,7 +144,7 @@ void Game::Render() {
 	SDL_RenderClear(renderer);
 
 	// Update all systems that requires rendering
-	ecsManager->GetSystem<RenderSystem>().Update(renderer);
+	ecsManager->GetSystem<RenderSystem>().Update(renderer, assetManager);
 
 	SDL_RenderPresent(renderer);
 }
