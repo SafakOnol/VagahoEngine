@@ -19,14 +19,15 @@ public:
 			const TransformComponent transform = entity.GetComponent<TransformComponent>();
 			const SpriteComponent sprite = entity.GetComponent<SpriteComponent>();
 
-			SDL_Rect entityRect = {
+			// Draw Rectangle
+			/*SDL_Rect entityRect = {
 				static_cast<int>(transform.position.x),
 				static_cast<int>(transform.position.y),
 				sprite.width,
 				sprite.height
 			};
 			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-			SDL_RenderFillRect(renderer, &entityRect);
+			SDL_RenderFillRect(renderer, &entityRect);*/
 		}
 	}
 };

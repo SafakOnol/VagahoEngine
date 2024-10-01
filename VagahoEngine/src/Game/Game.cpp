@@ -15,11 +15,12 @@
 
 
 Game::Game() {
-	bGameIsRunning = false;
-	ticksPrevFrame = 0;
-	deltaTime = 0;
+	bGameIsRunning	= false;
+	ticksPrevFrame	= 0;
+	deltaTime		= 0;
 
-	ecsManager = std::make_unique<ECSManager>();
+	ecsManager		= std::make_unique<ECSManager>();
+	assetManager	= std::make_unique<AssetManager>();
 
 	std::cout << "INITIAL TERMINAL COLOR" << std::endl;
 	LOG_INFO("Game constructor called!");
@@ -73,15 +74,19 @@ void Game::Setup() {
 	ecsManager->AddSystem<MovementSystem>();
 	ecsManager->AddSystem<RenderSystem>();
 
+	// Add assets to asset manager
+	assetManager->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-left.png");
+	assetManager->AddTexture(renderer, "chopper-image", "./assets/images/chopper.png");
+
 	Entity entity01 = ecsManager->CreateEntity();
 	entity01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
 	entity01.AddComponent<RigidbodyComponent>(glm::vec2(10.0, 10.0));	
-	entity01.AddComponent<SpriteComponent>(10, 10);
+	entity01.AddComponent<SpriteComponent>("tank-image", 10, 10);
 
 	Entity entity02 = ecsManager->CreateEntity();
 	entity02.AddComponent<TransformComponent>(glm::vec2(520.0, 220.0), glm::vec2(1.0, 1.0), 0.0);
 	entity02.AddComponent<RigidbodyComponent>(glm::vec2(-30.0, 10.0));
-	entity02.AddComponent<SpriteComponent>(20, 5);
+	entity02.AddComponent<SpriteComponent>("chopper-image", 20, 5);
 
 }
 
