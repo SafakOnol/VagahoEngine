@@ -11,7 +11,7 @@ class Game {
 private:
 	bool bGameIsRunning;
 	int ticksPrevFrame;
-	float deltaTime;
+	double deltaTime;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 

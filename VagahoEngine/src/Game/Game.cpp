@@ -3,6 +3,10 @@
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidbodyComponent.h"
+#include "../Components/SpriteComponent.h"
+#include "../Systems/MovementSystem.h"
+#include "../Systems/RenderSystem.h"
+
 
 #include <SDL_image.h>
 #include <glm/glm.hpp>
@@ -35,11 +39,11 @@ void Game::Initialize() {
 	// Create SDL display mode struct and populate with get current display mode function
 	SDL_DisplayMode displayMode;
 	SDL_GetCurrentDisplayMode(0, &displayMode);
-	//windowWidth	= 800;
-	//windowHeight	= 600;
+	windowWidth		= 800;
+	windowHeight	= 600;
 
-	windowWidth		= 3440;
-	windowHeight	= 1440;
+	//windowWidth		= 3440;
+	//windowHeight	= 1440;
 
 	window = SDL_CreateWindow(
 		"Vagaho Engine",
@@ -58,29 +62,27 @@ void Game::Initialize() {
 		return;
 	}
 	// Real Fullscreen mode (change video mode from os to app
-	SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+	// SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 	bGameIsRunning = true;
 }
 
 
 
 void Game::Setup() {
-	// TODO:
-	// Entity enemy = registry.CreateEntity();
-	// tank.AddComponent<TransformCOmponent>();
-	// ...
+	// Add systems that need to be processed in the game
+	ecsManager->AddSystem<MovementSystem>();
+	ecsManager->AddSystem<RenderSystem>();
+
 	Entity entity01 = ecsManager->CreateEntity();
-
-	/*ecsManager->AddComponent<TransformComponent>(entity01, glm::vec2(20.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
-	ecsManager->AddComponent<RigidbodyComponent>(entity01, glm::vec2(10.0, 0.0));*/
-
 	entity01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
-	entity01.AddComponent<RigidbodyComponent>(glm::vec2(10.0, 0.0));
-	entity01.bHasComponent<TransformComponent>();
-	entity01.RemoveComponent<TransformComponent>();
-	entity01.GetComponent<RigidbodyComponent>();
-	entity01.bHasComponent<TransformComponent>();
-	
+	entity01.AddComponent<RigidbodyComponent>(glm::vec2(10.0, 10.0));	
+	entity01.AddComponent<SpriteComponent>(10, 10);
+
+	Entity entity02 = ecsManager->CreateEntity();
+	entity02.AddComponent<TransformComponent>(glm::vec2(520.0, 220.0), glm::vec2(1.0, 1.0), 0.0);
+	entity02.AddComponent<RigidbodyComponent>(glm::vec2(-30.0, 10.0));
+	entity02.AddComponent<SpriteComponent>(20, 5);
+
 }
 
 void Game::HandleFrameTime() {
@@ -115,34 +117,29 @@ void Game::HandleInput() {
 }
 
 void Game::Update() {
-
+	
 	HandleFrameTime();
 
-	// TODO:
-	// MovementSystem.Update();
+	// Update all systems
+	ecsManager->GetSystem<MovementSystem>().Update(deltaTime);
 	// CollisionSystem.Update();
+
+
+
+
+	//////////////////////////////////////////////////////
+	/// END OF UPDATE
+	/// !!! Update ECS Manager at the end of game update.
+	ecsManager->Update();
+	//////////////////////////////////////////////////////
 }
 
 void Game::Render() {
 	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 	SDL_RenderClear(renderer);
 
-	// TODO: Render game objects...
-
-	//// Draw a PNG texture
-	//SDL_Surface* surface = IMG_Load("./assets/images/tank-tiger-right.png");
-	//SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	//SDL_FreeSurface(surface); // once the texture is created, surface is not needed anymore
-
-	//// rectangle struct to draw the texture
-	//SDL_Rect destinationRect = { 
-	//	static_cast<int>(playerPosition.x), 
-	//	static_cast<int>(playerPosition.y),
-	//	32, 
-	//	32 
-	//};
-	//SDL_RenderCopy(renderer, texture, NULL, &destinationRect); // NULL means we're copying the entire texture, not a subset of the texture rect (ie sprite anims)
-	//SDL_DestroyTexture(texture);
+	// Update all systems that requires rendering
+	ecsManager->GetSystem<RenderSystem>().Update(renderer);
 
 	SDL_RenderPresent(renderer);
 }

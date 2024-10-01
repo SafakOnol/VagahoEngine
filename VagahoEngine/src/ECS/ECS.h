@@ -286,12 +286,12 @@ inline bool ECSManager::bHasComponent(Entity entity) const {
 	const auto entityId = entity.GetId();
 	// test checks if componentId at the specific entityId is turned on in the bitset
 	bool result = entityComponentSignatures[entityId].test(componentId);
-	if (result) {
+	/*if (result) {
 		LOG_INFO("Entity id = '" + std::to_string(entityId) + "' does have the Component id = '" + std::to_string(componentId) + "'");
 	}
 	else {
 		LOG_WARNING("Entity id = '" + std::to_string(entityId) + "' doesn't have the Component id = '" + std::to_string(componentId) + "'");
-	}
+	}*/
 	
 	return result;
 	
@@ -303,7 +303,7 @@ inline TComponent& ECSManager::GetComponent(Entity entity) const
 	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
 	auto componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
-	LOG_INFO("Component id = '" + std::to_string(componentId) + "' was received from Entity id '" + std::to_string(entityId) + "'");
+	//LOG_INFO("Component id = '" + std::to_string(componentId) + "' was received from Entity id '" + std::to_string(entityId) + "'");
 	return componentPool->GetComponentForEntityId(entityId);
 }
 
