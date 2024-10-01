@@ -30,6 +30,7 @@ typedef std::bitset<MAX_COMPONENTS> Signature;
 ///////////////
 /// ENTITY
 ///////////////
+
 class Entity {
 private:
 	EntityId id;
@@ -48,6 +49,13 @@ public:
 	bool operator >(const Entity& other) const { return id > other.id; }
 	bool operator <(const Entity& other) const { return id < other.id; }
 
+	template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
+	template <typename TComponent> void RemoveComponent();
+	template <typename TComponent> bool bHasComponent() const;
+	template <typename TComponent> TComponent& GetComponent() const;
+
+	// Hold a pointer to the entity's owner ecsManager (forward declaration!!!)
+	class ECSManager* ecsManager;
 };
 
 ///////////////
@@ -203,6 +211,7 @@ public:
 	template <typename TComponent> void RemoveComponent(Entity entity);
 	// Check if a certain component is attached to a certain entity
 	template <typename TComponent> bool bHasComponent(Entity entity) const;
+	template <typename TComponent> TComponent& GetComponent(Entity entity) const;
 
 	/// System Functions
 	template <typename TSystem, typename ...TArgs> void AddSystem(TArgs&& ...args);
@@ -260,7 +269,7 @@ inline void ECSManager::AddComponent(Entity entity, TArgs && ...args)
 	// Change the component signature of the entity and set componenId on the bitset to 1
 	entityComponentSignatures[entityId].set(componentId);
 
-	LOG_INFO("Component id = " + std::to_string(componentId) + " was added to entity id " + std::to_string(entityId));
+	LOG_INFO("Component id = '" + std::to_string(componentId) + "' was added to Entity id = '" + std::to_string(entityId) + "'");
 }
 
 template<typename TComponent>
@@ -268,6 +277,7 @@ inline void ECSManager::RemoveComponent(Entity entity) {
 	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
 	entityComponentSignatures[entityId].set(componentId, false);
+	LOG_INFO("Component id: = '" + std::to_string(componentId) + "' was removed from the Entity id = '" + std::to_string(entityId) + "'");
 }
 
 template<typename TComponent>
@@ -275,7 +285,26 @@ inline bool ECSManager::bHasComponent(Entity entity) const {
 	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
 	// test checks if componentId at the specific entityId is turned on in the bitset
-	return entityComponentSignatures[entityId].test(componentId);
+	bool result = entityComponentSignatures[entityId].test(componentId);
+	if (result) {
+		LOG_INFO("Entity id = '" + std::to_string(entityId) + "' does have the Component id = '" + std::to_string(componentId) + "'");
+	}
+	else {
+		LOG_WARNING("Entity id = '" + std::to_string(entityId) + "' doesn't have the Component id = '" + std::to_string(componentId) + "'");
+	}
+	
+	return result;
+	
+}
+
+template<typename TComponent>
+inline TComponent& ECSManager::GetComponent(Entity entity) const
+{
+	const auto componentId = Component<TComponent>::GetId();
+	const auto entityId = entity.GetId();
+	auto componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
+	LOG_INFO("Component id = '" + std::to_string(componentId) + "' was received from Entity id '" + std::to_string(entityId) + "'");
+	return componentPool->GetComponentForEntityId(entityId);
 }
 
 
@@ -300,16 +329,37 @@ inline void ECSManager::RemoveSystem() {
 }
 
 template<typename TSystem>
-inline bool ECSManager::bHasSystem() const
-{
+inline bool ECSManager::bHasSystem() const {
 	return systems.find(std::type_index(typeid(TSystem))) != systems.end();	
 }
 
 template<typename TSystem>
-inline TSystem& ECSManager::GetSystem() const
-{
+inline TSystem& ECSManager::GetSystem() const {
 	auto system = systems.find(std::type_index(typeid(TSystem)));
 	return *(std::static_pointer_cast<TSystem>(system->second));
 }
 
+////////////////////
+/// ENTITY TEMPLATES
+////////////////////
 
+template<typename TComponent, typename ...TArgs>
+inline void Entity::AddComponent(TArgs && ...args) {
+	// ecsManager.AddComponent...
+	ecsManager->AddComponent<TComponent>(*this, std::forward<TArgs>(args)...);
+}
+
+template<typename TComponent>
+inline void Entity::RemoveComponent() {
+	ecsManager->RemoveComponent<TComponent>(*this);
+}
+
+template<typename TComponent>
+inline bool Entity::bHasComponent() const {
+	return ecsManager->bHasComponent<TComponent>(*this);
+}
+
+template<typename TComponent>
+inline TComponent& Entity::GetComponent() const {
+	return ecsManager->GetComponent<TComponent>(*this);
+}

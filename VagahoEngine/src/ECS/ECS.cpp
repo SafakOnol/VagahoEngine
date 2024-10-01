@@ -65,6 +65,7 @@ Entity ECSManager::CreateEntity() {
     entityId = entityCount++;
 
     Entity entity(entityId);
+    entity.ecsManager = this;
     entitiesToCreate.insert(entity);
 
     // Ensure the entityComponentSignatures vector has enough space

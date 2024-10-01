@@ -71,9 +71,16 @@ void Game::Setup() {
 	// ...
 	Entity entity01 = ecsManager->CreateEntity();
 
-	ecsManager->AddComponent<TransformComponent>(entity01, glm::vec2(20.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
-	ecsManager->AddComponent<RigidbodyComponent>(entity01, glm::vec2(10.0, 0.0));
+	/*ecsManager->AddComponent<TransformComponent>(entity01, glm::vec2(20.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
+	ecsManager->AddComponent<RigidbodyComponent>(entity01, glm::vec2(10.0, 0.0));*/
 
+	entity01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
+	entity01.AddComponent<RigidbodyComponent>(glm::vec2(10.0, 0.0));
+	entity01.bHasComponent<TransformComponent>();
+	entity01.RemoveComponent<TransformComponent>();
+	entity01.GetComponent<RigidbodyComponent>();
+	entity01.bHasComponent<TransformComponent>();
+	
 }
 
 void Game::HandleFrameTime() {
