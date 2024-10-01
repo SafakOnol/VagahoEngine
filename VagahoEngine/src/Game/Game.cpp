@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "../Logger/Logger.h"
 #include "../ECS/ECS.h"
+#include "../Components/TransformComponent.h"
+#include "../Components/RigidbodyComponent.h"
 
 #include <SDL_image.h>
 #include <glm/glm.hpp>
@@ -12,12 +14,15 @@ Game::Game() {
 	bGameIsRunning = false;
 	ticksPrevFrame = 0;
 	deltaTime = 0;
+
+	ecsManager = std::make_unique<ECSManager>();
+
 	std::cout << "INITIAL TERMINAL COLOR" << std::endl;
 	LOG_INFO("Game constructor called!");
 }
 
 Game::~Game() {
-	std::cout << "Game destructor called!" << std::endl;
+	LOG_INFO("Game destructor called!");
 }
 
 void Game::Initialize() {
@@ -64,6 +69,18 @@ void Game::Setup() {
 	// Entity enemy = registry.CreateEntity();
 	// tank.AddComponent<TransformCOmponent>();
 	// ...
+	Entity entity01 = ecsManager->CreateEntity();
+
+	/*ecsManager->AddComponent<TransformComponent>(entity01, glm::vec2(20.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
+	ecsManager->AddComponent<RigidbodyComponent>(entity01, glm::vec2(10.0, 0.0));*/
+
+	entity01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(1.0, 1.0), 0.0);
+	entity01.AddComponent<RigidbodyComponent>(glm::vec2(10.0, 0.0));
+	entity01.bHasComponent<TransformComponent>();
+	entity01.RemoveComponent<TransformComponent>();
+	entity01.GetComponent<RigidbodyComponent>();
+	entity01.bHasComponent<TransformComponent>();
+	
 }
 
 void Game::HandleFrameTime() {

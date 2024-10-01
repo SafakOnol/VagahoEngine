@@ -2,6 +2,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "../ECS/ECS.h"
+
 const int FPS = 60;
 const int FRAME_TIME_DURATION = 1000 / FPS;
 
@@ -12,6 +14,9 @@ private:
 	float deltaTime;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
+
+	std::unique_ptr<ECSManager> ecsManager;
+	
 
 public:
 	Game();

@@ -1,5 +1,5 @@
 #include "ECS.h"
-#include "../Logger/Logger.h"
+
 
 ComponentId IComponent::nextId = 0;
 
@@ -65,10 +65,17 @@ Entity ECSManager::CreateEntity() {
     entityId = entityCount++;
 
     Entity entity(entityId);
+    entity.ecsManager = this;
     entitiesToCreate.insert(entity);
-    return entity;
+
+    // Ensure the entityComponentSignatures vector has enough space
+    if (entityId >= entityComponentSignatures.size()) {
+        entityComponentSignatures.resize(entityId + 1);
+    }
 
     LOG_INFO("Entity created with id = " + std::to_string(entityId));
+
+    return entity;    
 }
 
 void ECSManager::AddEntityToSystems(Entity entity) {
@@ -90,4 +97,8 @@ void ECSManager::AddEntityToSystems(Entity entity) {
 
 void ECSManager::Update() {
     // TODO..
+    for (auto entity : entitiesToCreate) {
+        AddEntityToSystems(entity);
+    }
+    entitiesToCreate.clear();
 }
