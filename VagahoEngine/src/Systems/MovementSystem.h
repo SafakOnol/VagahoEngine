@@ -13,8 +13,7 @@ public:
 
 	void Update(double deltaTime) {
 		
-		for (auto entity : GetSystemEntities())
-		{
+		for (auto entity : GetSystemEntities()) {
 			TransformComponent& transform = entity.GetComponent<TransformComponent>(); // call this as reference since we are changing the current value
 			const RigidbodyComponent rigidbody = entity.GetComponent<RigidbodyComponent>();
 
