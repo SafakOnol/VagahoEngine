@@ -12,6 +12,10 @@
 #include <glm/glm.hpp>
 
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+
 
 
 Game::Game() {
@@ -40,9 +44,10 @@ void Game::Initialize() {
 	// Create SDL display mode struct and populate with get current display mode function
 	SDL_DisplayMode displayMode;
 	SDL_GetCurrentDisplayMode(0, &displayMode);
-	windowWidth		= 800;
-	windowHeight	= 600;
-
+	windowWidth		= 1600;
+	windowHeight	= 1200;
+	//windowWidth = displayMode.w;
+	//windowHeight = displayMode.h;
 	//windowWidth		= 3440;
 	//windowHeight	= 1440;
 
@@ -68,26 +73,69 @@ void Game::Initialize() {
 }
 
 
+void Game::LoadMap(const std::string& filename) {
+	
+}
 
-void Game::Setup() {
+void Game::LoadLevel(int level) {
 	// Add systems that need to be processed in the game
 	ecsManager->AddSystem<MovementSystem>();
 	ecsManager->AddSystem<RenderSystem>();
 
+
 	// Add assets to asset manager
 	assetManager->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
 	assetManager->AddTexture(renderer, "chopper-image", "./assets/images/chopper.png");
+	assetManager->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
 
+	// TODO: Load tilemap
+	const int TILESET_COLUMNS	= 10;	// Change this to match tileset grid
+	const int TILESIZE			= 32;	// Change this to match tileset resolution
+	double tileScale			= 2.0;	
+
+	std::vector<std::vector<int>> mapData;
+	std::ifstream mapFile("./assets/tilemaps/jungle2.map");
+	std::string line;
+	
+	while (std::getline(mapFile, line)) {
+		std::vector<int> row;
+		std::istringstream iss(line);
+		int tileId;
+		while (iss >> tileId) {
+			row.push_back(tileId);
+			if (iss.peek() == ',')
+				iss.ignore();
+		}
+		mapData.push_back(row);
+	}
+	mapFile.close();
+
+	for (int y = 0; y < mapData.size(); y++) {
+		for (int x = 0; x < mapData[y].size(); x++) {
+			int tileId = mapData[y][x];
+			int srcRectY = (tileId / TILESET_COLUMNS) * TILESIZE;
+			int srcRectX = (tileId % TILESET_COLUMNS) * TILESIZE;
+
+			Entity tile = ecsManager->CreateEntity();
+			tile.AddComponent<TransformComponent>(glm::vec2(x * (tileScale * TILESIZE), y * (tileScale * TILESIZE)), glm::vec2(tileScale, tileScale), 0.0);
+			tile.AddComponent<SpriteComponent>("tilemap-image", TILESIZE, TILESIZE, srcRectX, srcRectY);
+		}
+	}
+
+	// Load Entities and Components
 	Entity entity01 = ecsManager->CreateEntity();
 	entity01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(2.0, 2.0), 90.0);
-	entity01.AddComponent<RigidbodyComponent>(glm::vec2(20.0, 0.0));	
-	entity01.AddComponent<SpriteComponent>("tank-image");
+	entity01.AddComponent<RigidbodyComponent>(glm::vec2(20.0, 0.0));
+	entity01.AddComponent<SpriteComponent>("tank-image", 32, 32);
 
 	Entity entity02 = ecsManager->CreateEntity();
 	entity02.AddComponent<TransformComponent>(glm::vec2(520.0, 220.0), glm::vec2(2.0, 2.0), 0.0);
 	entity02.AddComponent<RigidbodyComponent>(glm::vec2(-30.0, 10.0));
 	entity02.AddComponent<SpriteComponent>("chopper-image", 32, 32);
+}
 
+void Game::Setup() {
+	LoadLevel(1);
 }
 
 void Game::HandleFrameTime() {
@@ -139,6 +187,8 @@ void Game::Update() {
 	//////////////////////////////////////////////////////
 }
 
+
+
 void Game::Render() {
 	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 	SDL_RenderClear(renderer);
@@ -148,6 +198,7 @@ void Game::Render() {
 
 	SDL_RenderPresent(renderer);
 }
+
 
 void Game::Run() {
 	Setup();

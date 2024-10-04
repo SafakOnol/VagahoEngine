@@ -19,37 +19,15 @@ public:
 		for (auto entity : GetSystemEntities()) {
 			const TransformComponent transform = entity.GetComponent<TransformComponent>();
 			const SpriteComponent sprite = entity.GetComponent<SpriteComponent>();
-			SDL_Texture* texture = assetManager->GetTexture(sprite.assetId);
-
-			// Draw Rectangle
-			/*SDL_Rect entityRect = {
-				static_cast<int>(transform.position.x),
-				static_cast<int>(transform.position.y),
-				sprite.width,
-				sprite.height
-			};
-			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-			SDL_RenderFillRect(renderer, &entityRect);*/
-
-
+			
 			// Set the source rectangle of original sprite texture
 			SDL_Rect srcRect = sprite.srcRect;
-			if (srcRect.h == 0 && srcRect.h == 0)
-				SDL_QueryTexture(texture, NULL, NULL, &srcRect.w, &srcRect.h);
-			auto spriteWidth = sprite.width;
-			auto spriteHeight = sprite.height;
-			if (spriteWidth == 0 && spriteHeight == 0) {
-				spriteWidth = srcRect.w;
-				spriteHeight = srcRect.h;
-			}
-
-
 			// Set the destination rectangle woth the x,y position
 			SDL_Rect destRect = {
 				static_cast<int>(transform.position.x),
 				static_cast<int>(transform.position.y),
-				static_cast<int>(spriteWidth * transform.scale.x),
-				static_cast<int>(spriteHeight * transform.scale.y)
+				static_cast<int>(sprite.width * transform.scale.x),
+				static_cast<int>(sprite.height * transform.scale.y)
 			};
 
 			// Draw PNG texture

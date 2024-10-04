@@ -18,6 +18,10 @@ private:
 
 	std::unique_ptr<ECSManager> ecsManager;
 	std::unique_ptr<AssetManager> assetManager;
+
+	std::vector<std::vector<int>> mapData;
+	int mapWidth;
+	int mapHeight;
 	
 
 public:
@@ -25,6 +29,8 @@ public:
 	~Game();
 	void Initialize();
 	void Setup();
+	void LoadLevel(int level);
+	void LoadMap(const std::string& filename);
 	void HandleFrameTime();
 	void HandleInput();
 	void Update();
