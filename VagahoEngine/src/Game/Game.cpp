@@ -94,7 +94,7 @@ void Game::LoadLevel(int level) {
 	double tileScale			= 2.0;	
 
 	std::vector<std::vector<int>> mapData;
-	std::ifstream mapFile("./assets/tilemaps/jungle2.map");
+	std::ifstream mapFile("./assets/tilemaps/jungle.map");
 	std::string line;
 	
 	while (std::getline(mapFile, line)) {
@@ -118,7 +118,7 @@ void Game::LoadLevel(int level) {
 
 			Entity tile = ecsManager->CreateEntity();
 			tile.AddComponent<TransformComponent>(glm::vec2(x * (tileScale * TILESIZE), y * (tileScale * TILESIZE)), glm::vec2(tileScale, tileScale), 0.0);
-			tile.AddComponent<SpriteComponent>("tilemap-image", TILESIZE, TILESIZE, srcRectX, srcRectY);
+			tile.AddComponent<SpriteComponent>("tilemap-image", TILESIZE, TILESIZE, 0, srcRectX, srcRectY);
 		}
 	}
 
@@ -126,12 +126,12 @@ void Game::LoadLevel(int level) {
 	Entity entity01 = ecsManager->CreateEntity();
 	entity01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(2.0, 2.0), 90.0);
 	entity01.AddComponent<RigidbodyComponent>(glm::vec2(20.0, 0.0));
-	entity01.AddComponent<SpriteComponent>("tank-image", 32, 32);
+	entity01.AddComponent<SpriteComponent>("tank-image", 32, 32, 3);
 
 	Entity entity02 = ecsManager->CreateEntity();
-	entity02.AddComponent<TransformComponent>(glm::vec2(520.0, 220.0), glm::vec2(2.0, 2.0), 0.0);
-	entity02.AddComponent<RigidbodyComponent>(glm::vec2(-30.0, 10.0));
-	entity02.AddComponent<SpriteComponent>("chopper-image", 32, 32);
+	entity02.AddComponent<TransformComponent>(glm::vec2(520.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
+	entity02.AddComponent<RigidbodyComponent>(glm::vec2(-30.0, 0.0));
+	entity02.AddComponent<SpriteComponent>("chopper-image", 32, 32, 1);
 }
 
 void Game::Setup() {
