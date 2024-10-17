@@ -5,6 +5,7 @@
 #include "../Components/RigidbodyComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
+#include "../Components/BoxCollider.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
@@ -91,6 +92,7 @@ void Game::LoadLevel(int level) {
 	assetManager->AddTexture(renderer, "chopper-image", "./assets/images/chopper.png");
 	assetManager->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
 	assetManager->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
+	assetManager->AddTexture(renderer, "truck-image", "./assets/images/truck-ford-left.png");
 
 	// TODO: Load tilemap
 	const int TILESET_COLUMNS	= 10;	// Change this to match tileset grid
@@ -131,6 +133,15 @@ void Game::LoadLevel(int level) {
 	tank01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
 	tank01.AddComponent<RigidbodyComponent>(glm::vec2(20.0, 0.0));
 	tank01.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
+	tank01.AddComponent<BoxColliderComponent>(32, 32);
+
+
+	Entity truck01 = ecsManager->CreateEntity();
+	truck01.AddComponent<TransformComponent>(glm::vec2(300.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
+	truck01.AddComponent<RigidbodyComponent>(glm::vec2(-20.0, 0.0));
+	truck01.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
+	truck01.AddComponent<BoxColliderComponent>(32, 32);
+	
 
 	Entity chopper = ecsManager->CreateEntity();
 	chopper.AddComponent<TransformComponent>(glm::vec2(520.0, 200.0), glm::vec2(2.0, 2.0), 0.0);
