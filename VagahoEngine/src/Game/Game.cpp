@@ -7,6 +7,7 @@
 #include "../Components/AnimationComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
+#include "../Systems/AnimationSystem.h"
 
 
 #include <SDL_image.h>
@@ -82,12 +83,14 @@ void Game::LoadLevel(int level) {
 	// Add systems that need to be processed in the game
 	ecsManager->AddSystem<MovementSystem>();
 	ecsManager->AddSystem<RenderSystem>();
+	ecsManager->AddSystem<AnimationSystem>();
 
 
 	// Add assets to asset manager
 	assetManager->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
 	assetManager->AddTexture(renderer, "chopper-image", "./assets/images/chopper.png");
 	assetManager->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
+	assetManager->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
 
 	// TODO: Load tilemap
 	const int TILESET_COLUMNS	= 10;	// Change this to match tileset grid
@@ -125,15 +128,21 @@ void Game::LoadLevel(int level) {
 
 	// Load Entities and Components
 	Entity tank01 = ecsManager->CreateEntity();
-	tank01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(2.0, 2.0), 90.0);
+	tank01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
 	tank01.AddComponent<RigidbodyComponent>(glm::vec2(20.0, 0.0));
 	tank01.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
 
 	Entity chopper = ecsManager->CreateEntity();
-	chopper.AddComponent<TransformComponent>(glm::vec2(520.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
+	chopper.AddComponent<TransformComponent>(glm::vec2(520.0, 200.0), glm::vec2(2.0, 2.0), 0.0);
 	chopper.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
 	chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 2);
-	chopper.AddComponent<AnimationComponent>(2, deltaTime, true);
+	chopper.AddComponent<AnimationComponent>(2, 15, true);
+
+	Entity radarScreen = ecsManager->CreateEntity();
+	radarScreen.AddComponent<TransformComponent>(glm::vec2(windowWidth - (3*64), windowHeight - (3*64)), glm::vec2(2.0, 2.0), 0.0);
+	radarScreen.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
+	radarScreen.AddComponent<SpriteComponent>("radar-image", 64, 64, 3);
+	radarScreen.AddComponent<AnimationComponent>(8, 8, true);
 }
 
 void Game::Setup() {
@@ -177,6 +186,7 @@ void Game::Update() {
 
 	// Update all systems
 	ecsManager->GetSystem<MovementSystem>().Update(deltaTime);
+	ecsManager->GetSystem<AnimationSystem>().Update();
 	// CollisionSystem.Update();
 
 
