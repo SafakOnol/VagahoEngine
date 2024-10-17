@@ -5,11 +5,11 @@
 #include "../Components/RigidbodyComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
-#include "../Components/BoxCollider.h"
+#include "../Components/BoxColliderComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
-
+#include "../Systems/CollisionSystem.h"
 
 #include <SDL_image.h>
 #include <glm/glm.hpp>
@@ -85,6 +85,7 @@ void Game::LoadLevel(int level) {
 	ecsManager->AddSystem<MovementSystem>();
 	ecsManager->AddSystem<RenderSystem>();
 	ecsManager->AddSystem<AnimationSystem>();
+	ecsManager->AddSystem<CollisionSystem>();
 
 
 	// Add assets to asset manager
@@ -198,7 +199,7 @@ void Game::Update() {
 	// Update all systems
 	ecsManager->GetSystem<MovementSystem>().Update(deltaTime);
 	ecsManager->GetSystem<AnimationSystem>().Update();
-	// CollisionSystem.Update();
+	ecsManager->GetSystem<CollisionSystem>().Update();
 
 
 

@@ -453,7 +453,7 @@
     <ClInclude Include="libs\sol\sol.hpp" />
     <ClInclude Include="src\AssetManager\AssetManager.h" />
     <ClInclude Include="src\Components\AnimationComponent.h" />
-    <ClInclude Include="src\Components\BoxCollider.h" />
+    <ClInclude Include="src\Components\BoxColliderComponent.h" />
     <ClInclude Include="src\Components\RigidbodyComponent.h" />
     <ClInclude Include="src\Components\SpriteComponent.h" />
     <ClInclude Include="src\ECS\ECS.h" />
@@ -461,6 +461,7 @@
     <ClInclude Include="src\Logger\Logger.h" />
     <ClInclude Include="src\Components\TransformComponent.h" />
     <ClInclude Include="src\Systems\AnimationSystem.h" />
+    <ClInclude Include="src\Systems\CollisionSystem.h" />
     <ClInclude Include="src\Systems\MovementSystem.h" />
     <ClInclude Include="src\Systems\RenderSystem.h" />
   </ItemGroup>

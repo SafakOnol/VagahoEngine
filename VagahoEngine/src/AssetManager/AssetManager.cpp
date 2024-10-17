@@ -5,12 +5,12 @@
 #include <SDL_image.h>
 
 AssetManager::AssetManager() {
-	LOG_INFO("Asset Manager constructor called");
+	// LOG_INFO("Asset Manager constructor called");
 }
 
 AssetManager::~AssetManager() {
 	ClearAssets();
-	LOG_INFO("Asset Manager destructor called");
+	// LOG_INFO("Asset Manager destructor called");
 }
 
 void AssetManager::ClearAssets() {
@@ -26,7 +26,7 @@ void AssetManager::AddTexture(SDL_Renderer* renderer, const std::string& assetId
 	SDL_FreeSurface(surface);
 	// Add the texture to the map
 	textures.emplace(assetId, texture);
-	LOG_INFO("Texture added. Texture Id: " + assetId);
+	// LOG_INFO("Texture added. Texture Id: " + assetId);
 }
 
 SDL_Texture* AssetManager::GetTexture(const std::string& assetId) {
