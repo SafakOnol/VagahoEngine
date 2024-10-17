@@ -452,6 +452,7 @@
     <ClInclude Include="libs\lua\lualib.h" />
     <ClInclude Include="libs\sol\sol.hpp" />
     <ClInclude Include="src\AssetManager\AssetManager.h" />
+    <ClInclude Include="src\Components\AnimationComponent.h" />
     <ClInclude Include="src\Components\RigidbodyComponent.h" />
     <ClInclude Include="src\Components\SpriteComponent.h" />
     <ClInclude Include="src\ECS\ECS.h" />

@@ -4,6 +4,7 @@
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidbodyComponent.h"
 #include "../Components/SpriteComponent.h"
+#include "../Components/AnimationComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 
@@ -123,15 +124,16 @@ void Game::LoadLevel(int level) {
 	}
 
 	// Load Entities and Components
-	Entity entity01 = ecsManager->CreateEntity();
-	entity01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(2.0, 2.0), 90.0);
-	entity01.AddComponent<RigidbodyComponent>(glm::vec2(20.0, 0.0));
-	entity01.AddComponent<SpriteComponent>("tank-image", 32, 32, 3);
+	Entity tank01 = ecsManager->CreateEntity();
+	tank01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(2.0, 2.0), 90.0);
+	tank01.AddComponent<RigidbodyComponent>(glm::vec2(20.0, 0.0));
+	tank01.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
 
-	Entity entity02 = ecsManager->CreateEntity();
-	entity02.AddComponent<TransformComponent>(glm::vec2(520.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
-	entity02.AddComponent<RigidbodyComponent>(glm::vec2(-30.0, 0.0));
-	entity02.AddComponent<SpriteComponent>("chopper-image", 32, 32, 1);
+	Entity chopper = ecsManager->CreateEntity();
+	chopper.AddComponent<TransformComponent>(glm::vec2(520.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
+	chopper.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
+	chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 2);
+	chopper.AddComponent<AnimationComponent>(2, deltaTime, true);
 }
 
 void Game::Setup() {
