@@ -8,6 +8,7 @@
 #include <set>
 #include <memory>
 #include <algorithm>
+#include <deque>
 
 #include "../Logger/Logger.h"
 
@@ -39,6 +40,7 @@ public:
 	Entity(EntityId id) : id(id) {} // Constructor using id
 	Entity(const Entity& entity) = default;
 	EntityId GetId() const;
+	void Destroy();
 	
 	// overload & create default assignment operator
 	Entity& operator =(const Entity& other) = default;
@@ -188,6 +190,9 @@ private:
 
 	std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
 
+	// List of free entitiy ids that were previosly removed
+	std::deque<int> freeIds;
+
 public:
 	// ECSManager() = default;
 	ECSManager() { LOG_INFO("ECSManager constructor called!"); }
@@ -198,10 +203,11 @@ public:
 
 	/// Entity Functions
 	Entity CreateEntity();
+	void DestroyEntity(Entity entity);
 
 	// Check the component signature of an entity and add the entity to the interested system
 	void AddEntityToSystems(Entity entity);
-
+	void RemoveEntityFromSystems(Entity entity);
 
 	
 	/// Component Functions
