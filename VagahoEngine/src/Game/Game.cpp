@@ -10,6 +10,8 @@
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
 #include "../Systems/CollisionSystem.h"
+#include "../Systems/CollisionRenderSystem.h"
+
 
 #include <SDL_image.h>
 #include <glm/glm.hpp>
@@ -23,6 +25,7 @@
 
 Game::Game() {
 	bGameIsRunning	= false;
+	bDebugState		= false;
 	ticksPrevFrame	= 0;
 	deltaTime		= 0;
 
@@ -86,6 +89,7 @@ void Game::LoadLevel(int level) {
 	ecsManager->AddSystem<RenderSystem>();
 	ecsManager->AddSystem<AnimationSystem>();
 	ecsManager->AddSystem<CollisionSystem>();
+	ecsManager->AddSystem<CollisionRenderSystem>();
 
 
 	// Add assets to asset manager
@@ -143,7 +147,6 @@ void Game::LoadLevel(int level) {
 	truck01.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
 	truck01.AddComponent<BoxColliderComponent>(32, 32);
 	
-
 	Entity chopper = ecsManager->CreateEntity();
 	chopper.AddComponent<TransformComponent>(glm::vec2(520.0, 200.0), glm::vec2(2.0, 2.0), 0.0);
 	chopper.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
@@ -187,6 +190,9 @@ void Game::HandleInput() {
 				if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
 					bGameIsRunning = false;
 				}
+				if (sdlEvent.key.keysym.sym == SDLK_d) {
+					bDebugState = !bDebugState;
+				}
 				break;
 		}
 	}
@@ -219,6 +225,9 @@ void Game::Render() {
 
 	// Update all systems that requires rendering
 	ecsManager->GetSystem<RenderSystem>().Update(renderer, assetManager);
+	if (bDebugState) {
+		ecsManager->GetSystem<CollisionRenderSystem>().Update(renderer);
+	}
 
 	SDL_RenderPresent(renderer);
 }

@@ -40,6 +40,7 @@ private:
 	void OnCollisionStart(Entity& entity1, Entity& entity2) {
 		LOG_INFO("Collision started between Entity " + std::to_string(entity1.GetId()) + " and Entity " + std::to_string(entity2.GetId()));
 		// TODO: Add broadcast function here.
+
 	}
 
 	void OnCollisionStay(Entity& entity1, Entity& entity2) {
@@ -91,12 +92,12 @@ public:
 				bool bCollisionOnGoing = CheckAABBCollision(
 					entityFirstTransform.position.x + entityFirstBoxCollider.offset.x,
 					entityFirstTransform.position.y + entityFirstBoxCollider.offset.y,
-					entityFirstBoxCollider.width,
-					entityFirstBoxCollider.height,
+					entityFirstBoxCollider.width * entityFirstTransform.scale.x,
+					entityFirstBoxCollider.height * entityFirstTransform.scale.y,
 					entitySecondTransform.position.x + entitySecondBoxCollider.offset.x,
 					entitySecondTransform.position.y + entitySecondBoxCollider.offset.y,
-					entitySecondBoxCollider.width,
-					entitySecondBoxCollider.height
+					entitySecondBoxCollider.width * entitySecondTransform.scale.x,
+					entitySecondBoxCollider.height * entitySecondTransform.scale.y
 				);
 
 				// Create a unique pair for these two entities
