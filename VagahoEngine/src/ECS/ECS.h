@@ -269,7 +269,7 @@ inline void ECSManager::AddComponent(Entity entity, TArgs && ...args)
 	// Change the component signature of the entity and set componenId on the bitset to 1
 	entityComponentSignatures[entityId].set(componentId);
 
-	LOG_INFO("Component id = '" + std::to_string(componentId) + "' was added to Entity id = '" + std::to_string(entityId) + "'");
+	// LOG_INFO("Component id = '" + std::to_string(componentId) + "' was added to Entity id = '" + std::to_string(entityId) + "'");
 }
 
 template<typename TComponent>
@@ -277,7 +277,7 @@ inline void ECSManager::RemoveComponent(Entity entity) {
 	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
 	entityComponentSignatures[entityId].set(componentId, false);
-	LOG_INFO("Component id: = '" + std::to_string(componentId) + "' was removed from the Entity id = '" + std::to_string(entityId) + "'");
+	// LOG_INFO("Component id: = '" + std::to_string(componentId) + "' was removed from the Entity id = '" + std::to_string(entityId) + "'");
 }
 
 template<typename TComponent>

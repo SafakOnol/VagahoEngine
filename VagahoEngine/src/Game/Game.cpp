@@ -5,9 +5,12 @@
 #include "../Components/RigidbodyComponent.h"
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
+#include "../Components/BoxColliderComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
+#include "../Systems/CollisionSystem.h"
+#include "../Systems/CollisionRenderSystem.h"
 
 
 #include <SDL_image.h>
@@ -22,6 +25,7 @@
 
 Game::Game() {
 	bGameIsRunning	= false;
+	bDebugState		= false;
 	ticksPrevFrame	= 0;
 	deltaTime		= 0;
 
@@ -84,6 +88,8 @@ void Game::LoadLevel(int level) {
 	ecsManager->AddSystem<MovementSystem>();
 	ecsManager->AddSystem<RenderSystem>();
 	ecsManager->AddSystem<AnimationSystem>();
+	ecsManager->AddSystem<CollisionSystem>();
+	ecsManager->AddSystem<CollisionRenderSystem>();
 
 
 	// Add assets to asset manager
@@ -91,6 +97,7 @@ void Game::LoadLevel(int level) {
 	assetManager->AddTexture(renderer, "chopper-image", "./assets/images/chopper.png");
 	assetManager->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
 	assetManager->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
+	assetManager->AddTexture(renderer, "truck-image", "./assets/images/truck-ford-left.png");
 
 	// TODO: Load tilemap
 	const int TILESET_COLUMNS	= 10;	// Change this to match tileset grid
@@ -131,7 +138,15 @@ void Game::LoadLevel(int level) {
 	tank01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
 	tank01.AddComponent<RigidbodyComponent>(glm::vec2(20.0, 0.0));
 	tank01.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
+	tank01.AddComponent<BoxColliderComponent>(32, 32);
 
+
+	Entity truck01 = ecsManager->CreateEntity();
+	truck01.AddComponent<TransformComponent>(glm::vec2(300.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
+	truck01.AddComponent<RigidbodyComponent>(glm::vec2(-20.0, 0.0));
+	truck01.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
+	truck01.AddComponent<BoxColliderComponent>(32, 32);
+	
 	Entity chopper = ecsManager->CreateEntity();
 	chopper.AddComponent<TransformComponent>(glm::vec2(520.0, 200.0), glm::vec2(2.0, 2.0), 0.0);
 	chopper.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
@@ -175,6 +190,9 @@ void Game::HandleInput() {
 				if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
 					bGameIsRunning = false;
 				}
+				if (sdlEvent.key.keysym.sym == SDLK_d) {
+					bDebugState = !bDebugState;
+				}
 				break;
 		}
 	}
@@ -187,7 +205,7 @@ void Game::Update() {
 	// Update all systems
 	ecsManager->GetSystem<MovementSystem>().Update(deltaTime);
 	ecsManager->GetSystem<AnimationSystem>().Update();
-	// CollisionSystem.Update();
+	ecsManager->GetSystem<CollisionSystem>().Update();
 
 
 
@@ -207,6 +225,9 @@ void Game::Render() {
 
 	// Update all systems that requires rendering
 	ecsManager->GetSystem<RenderSystem>().Update(renderer, assetManager);
+	if (bDebugState) {
+		ecsManager->GetSystem<CollisionRenderSystem>().Update(renderer);
+	}
 
 	SDL_RenderPresent(renderer);
 }

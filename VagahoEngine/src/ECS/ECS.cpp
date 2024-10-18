@@ -73,7 +73,7 @@ Entity ECSManager::CreateEntity() {
         entityComponentSignatures.resize(entityId + 1);
     }
 
-    LOG_INFO("Entity created with id = " + std::to_string(entityId));
+    // LOG_INFO("Entity created with id = " + std::to_string(entityId));
 
     return entity;    
 }

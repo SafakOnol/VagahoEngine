@@ -11,6 +11,7 @@ const int FRAME_TIME_DURATION = 1000 / FPS;
 class Game {
 private:
 	bool			bGameIsRunning;
+	bool			bDebugState;
 	int				ticksPrevFrame;
 	double			deltaTime;
 	SDL_Window*		window;
