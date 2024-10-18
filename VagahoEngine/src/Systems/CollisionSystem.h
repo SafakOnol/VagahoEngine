@@ -12,58 +12,56 @@ public:
 	}
 
 	void Update() {
-		
-		struct CollisionEntity {
-			TransformComponent transformComponent;
-			BoxColliderComponent boxColliderComponent;
-		};
 
-		std::vector<CollisionEntity> collisionEntities;
-		for (auto entity : GetSystemEntities()) {
-			CollisionEntity collisionEntity;
-			collisionEntity.transformComponent = entity.GetComponent<TransformComponent>();
-			collisionEntity.boxColliderComponent = entity.GetComponent<BoxColliderComponent>();
-			collisionEntities.emplace_back(collisionEntity);
-			
-		}
-		// LOG_INFO(std::to_string(collisionEntities.size()));
+		auto collisionEntities = GetSystemEntities();
 
-		//LOG_INFO(std::to_string(collisionEntities.size()));
-		//if (1 < collisionEntities.size()) {
-		//	// LOG_INFO(std::to_string(collisionEntities.at(0).transformComponent.position.x));
-		//}
-		//else {
-		//	LOG_ERROR("Index out of bounds");
-		//	return;
-		//}
-		//
-
-		
-		
-
-
-		if (collisionEntities.size() > 0)
+		for (std::vector<Entity>::iterator i = collisionEntities.begin(); i != collisionEntities.end(); i++)
 		{
-			auto pos1x = collisionEntities.at(0).transformComponent.position.x;
-			auto pos1y = collisionEntities.at(0).transformComponent.position.y;
-			auto pos2x = collisionEntities.at(1).transformComponent.position.x;
-			auto pos2y = collisionEntities.at(1).transformComponent.position.y;
-			auto box1h = collisionEntities.at(0).boxColliderComponent.height;
-			auto box1w = collisionEntities.at(0).boxColliderComponent.width;
-			auto box2h = collisionEntities.at(1).boxColliderComponent.height;
-			auto box2w = collisionEntities.at(1).boxColliderComponent.width;
+			Entity entityFirst = *i;
+			auto entityFirstTransform		= entityFirst.GetComponent<TransformComponent>();
+			auto entityFirstBoxCollider		= entityFirst.GetComponent<BoxColliderComponent>();
 
-			if (
-				pos1x < (pos2x + box2w) &&
-				(pos1x + box1w) > pos2x &&
-				pos1y < (pos2y + box2h) &&
-				(pos1y + box1h) > pos2y				
-				)
+
+
+			for (std::vector<Entity>::iterator j = i; j != collisionEntities.end(); j++)
 			{
-				LOG_WARNING("COLLISION DETECTED!!!");
+				Entity entitySecond = *j;
+
+				// bypass if comparing same entities
+				if (entityFirst == entitySecond) continue;
+
+				auto entitySecondTransform		= entitySecond.GetComponent<TransformComponent>();
+				auto entitySecondBoxCollider	= entitySecond.GetComponent<BoxColliderComponent>();
+				
+				// check collision between a and b
+				bool bCollisionOnGoing = CheckAABBCollision(
+					entityFirstTransform.position.x + entityFirstBoxCollider.offset.x,
+					entityFirstTransform.position.y + entityFirstBoxCollider.offset.y,
+					entityFirstBoxCollider.width,
+					entityFirstBoxCollider.height,
+					entitySecondTransform.position.x + entitySecondBoxCollider.offset.x,
+					entitySecondTransform.position.y + entitySecondBoxCollider.offset.y,
+					entitySecondBoxCollider.width,
+					entitySecondBoxCollider.height
+				);
+
+				if (bCollisionOnGoing) {
+					LOG_WARNING("Entity " + std::to_string(entityFirst.GetId()) + " is colliding with " + std::to_string(entitySecond.GetId()));
+				}
 			}
-
 		}
+		
+	}
 
+	bool CheckAABBCollision(
+		double aX, double aY, double aW, double aH,
+		double bX, double bY, double bW, double bH
+	) {
+		return (
+			aX < bX + bW &&
+			aX + aW > bX &&
+			aY < bY + bH &&
+			aY + aH > bY
+			);
 	}
 };
