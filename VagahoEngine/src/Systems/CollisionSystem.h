@@ -40,6 +40,8 @@ private:
 	void OnCollisionStart(Entity& entity1, Entity& entity2) {
 		LOG_INFO("Collision started between Entity " + std::to_string(entity1.GetId()) + " and Entity " + std::to_string(entity2.GetId()));
 		// TODO: Add broadcast function here.
+		entity1.Destroy();
+		entity2.Destroy();
 
 	}
 

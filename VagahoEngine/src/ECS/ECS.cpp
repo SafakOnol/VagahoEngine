@@ -7,6 +7,11 @@ EntityId Entity::GetId() const {
     return id;
 }
 
+void Entity::Destroy() {
+    ecsManager->DestroyEntity(*this);
+    LOG_INFO("Entity #" + std::to_string(this->GetId()) + " destroyed");
+}
+
 void System::AddEntityToSystem(Entity entity) {
     entities.push_back(entity);
 }
@@ -62,20 +67,32 @@ const Signature& System::GetComponentSignature() const {
 
 Entity ECSManager::CreateEntity() {
     EntityId entityId;
-    entityId = entityCount++;
+
+    if (freeIds.empty()) {
+        // If there are no free ids waiting to be reused
+        entityId = entityCount++;
+        // Ensure the entityComponentSignatures vector has enough space
+        if (entityId >= entityComponentSignatures.size()) {
+            entityComponentSignatures.resize(entityId + 1);
+        }
+    }
+    else {
+        // Reuse an id from the list of previously removed entities.
+        entityId = freeIds.front();
+        freeIds.pop_front();
+    }    
 
     Entity entity(entityId);
     entity.ecsManager = this;
-    entitiesToCreate.insert(entity);
+    entitiesToCreate.insert(entity);  
 
-    // Ensure the entityComponentSignatures vector has enough space
-    if (entityId >= entityComponentSignatures.size()) {
-        entityComponentSignatures.resize(entityId + 1);
-    }
-
-    // LOG_INFO("Entity created with id = " + std::to_string(entityId));
+     LOG_INFO("Entity created with id = " + std::to_string(entityId));
 
     return entity;    
+}
+
+void ECSManager::DestroyEntity(Entity entity) {
+    entitiesToDestroy.insert(entity);
 }
 
 void ECSManager::AddEntityToSystems(Entity entity) {
@@ -95,10 +112,26 @@ void ECSManager::AddEntityToSystems(Entity entity) {
 
 }
 
+void ECSManager::RemoveEntityFromSystems(Entity entity) {
+    for (auto system : systems) {
+        system.second->RemoveEntityFromSystem(entity);
+    }
+}
+
 void ECSManager::Update() {
-    // TODO..
+    // Process the entities waiting to be created to the active Systems
     for (auto entity : entitiesToCreate) {
         AddEntityToSystems(entity);
     }
     entitiesToCreate.clear();
+
+    // Process the entities waiting to be destroyed from the active Systems
+    for (auto entity : entitiesToDestroy) {
+        RemoveEntityFromSystems(entity);
+        entityComponentSignatures[entity.GetId()].reset();
+
+        // Make the entity Id available to be reused
+        freeIds.push_back(entity.GetId());
+    }
+    entitiesToDestroy.clear();
 }

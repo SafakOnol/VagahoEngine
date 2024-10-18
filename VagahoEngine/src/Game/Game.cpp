@@ -158,6 +158,7 @@ void Game::LoadLevel(int level) {
 	radarScreen.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
 	radarScreen.AddComponent<SpriteComponent>("radar-image", 64, 64, 3);
 	radarScreen.AddComponent<AnimationComponent>(8, 8, true);
+
 }
 
 void Game::Setup() {
