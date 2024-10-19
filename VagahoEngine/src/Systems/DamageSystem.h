@@ -13,10 +13,10 @@ public:
 	}
 
 	void SubscribeToEvents(std::unique_ptr<EventManager>& eventManager) {
-		eventManager->Subscribe<CollisionEvent>(this, &DamageSystem::onCollision);
+		eventManager->Subscribe<CollisionEvent>(this, &DamageSystem::OnCollision);
 	}
 
-	void onCollision(CollisionEvent& event) {
+	void OnCollision(CollisionEvent& event) {
 		LOG_INFO("The Damage system received and event collision between entities " + std::to_string(event.a.GetId()) + " and " + std::to_string(event.b.GetId()));
 		event.a.Destroy();
 		event.b.Destroy();

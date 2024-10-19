@@ -12,6 +12,7 @@
 #include "../Systems/CollisionSystem.h"
 #include "../Systems/CollisionRenderSystem.h"
 #include "../Systems/DamageSystem.h"
+#include "../Systems/KeyboardControlSystem.h"
 
 
 #include <SDL_image.h>
@@ -93,6 +94,7 @@ void Game::LoadLevel(int level) {
 	ecsManager->AddSystem<CollisionSystem>();
 	ecsManager->AddSystem<CollisionRenderSystem>();
 	ecsManager->AddSystem<DamageSystem>();
+	ecsManager->AddSystem<KeyboardControlSystem>();
 
 
 	// Add assets to asset manager
@@ -197,6 +199,7 @@ void Game::HandleInput() {
 				if (sdlEvent.key.keysym.sym == SDLK_d) {
 					bDebugState = !bDebugState;
 				}
+				eventManager->BroadcastEvent<KeyPressedEvent>(sdlEvent.key.keysym.sym);
 				break;
 		}
 	}
@@ -211,13 +214,14 @@ void Game::Update() {
 
 	// Process Subscriptions of the events for all systems
 	ecsManager->GetSystem<DamageSystem>().SubscribeToEvents(eventManager);
+	ecsManager->GetSystem<KeyboardControlSystem>().SubscribeToEvents(eventManager);
 
 	// Update all systems
 	ecsManager->GetSystem<MovementSystem>().Update(deltaTime);
 	ecsManager->GetSystem<AnimationSystem>().Update();
 	ecsManager->GetSystem<CollisionSystem>().Update(eventManager);
 	ecsManager->GetSystem<DamageSystem>().Update();
-
+	ecsManager->GetSystem<KeyboardControlSystem>().Update();
 
 
 	//////////////////////////////////////////////////////
