@@ -6,6 +6,7 @@
 #include "../Components/SpriteComponent.h"
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
+#include "../Components/KeyboardControlComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
@@ -99,7 +100,7 @@ void Game::LoadLevel(int level) {
 
 	// Add assets to asset manager
 	assetManager->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
-	assetManager->AddTexture(renderer, "chopper-image", "./assets/images/chopper.png");
+	assetManager->AddTexture(renderer, "chopper-image", "./assets/images/chopper-spritesheet.png");
 	assetManager->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
 	assetManager->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
 	assetManager->AddTexture(renderer, "truck-image", "./assets/images/truck-ford-left.png");
@@ -157,6 +158,8 @@ void Game::LoadLevel(int level) {
 	chopper.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
 	chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 2);
 	chopper.AddComponent<AnimationComponent>(2, 15, true);
+	chopper.AddComponent<KeyboardControlComponent>(glm::vec2(0, -150), glm::vec2(150, 0), glm::vec2(0, 150), glm::vec2(-150, 0));
+
 
 	Entity radarScreen = ecsManager->CreateEntity();
 	radarScreen.AddComponent<TransformComponent>(glm::vec2(windowWidth - (3*64), windowHeight - (3*64)), glm::vec2(2.0, 2.0), 0.0);

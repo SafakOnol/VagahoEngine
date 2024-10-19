@@ -454,6 +454,7 @@
     <ClInclude Include="src\AssetManager\AssetManager.h" />
     <ClInclude Include="src\Components\AnimationComponent.h" />
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
+    <ClInclude Include="src\Components\KeyboardControlComponent.h" />
     <ClInclude Include="src\Components\RigidbodyComponent.h" />
     <ClInclude Include="src\Components\SpriteComponent.h" />
     <ClInclude Include="src\ECS\ECS.h" />
