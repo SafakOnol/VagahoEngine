@@ -100,6 +100,11 @@ public:
 		listeners[typeid(TEvent)]->push_back(std::move(newListener));
 	}
 
+	// clear subscriber list
+	void Reset() {
+		listeners.clear();
+	}
+
 	//////////////////////////////////////
 	/// Unsubscribe from an event type <T>
 	//////////////////////////////////////
