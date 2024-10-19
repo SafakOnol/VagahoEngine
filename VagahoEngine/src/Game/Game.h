@@ -4,6 +4,7 @@
 
 #include "../ECS/ECS.h"
 #include "../AssetManager/AssetManager.h"
+#include "../EventManager/EventManager.h"
 
 const int FPS = 60;
 const int FRAME_TIME_DURATION = 1000 / FPS;
@@ -19,6 +20,7 @@ private:
 
 	std::unique_ptr<ECSManager> ecsManager;
 	std::unique_ptr<AssetManager> assetManager;
+	std::unique_ptr<EventManager> eventManager;
 
 	std::vector<std::vector<int>> mapData;
 	int mapWidth;

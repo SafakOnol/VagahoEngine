@@ -15,8 +15,8 @@
 
 using EntityId		= uint32_t;
 using ComponentId	= uint32_t;
-constexpr EntityId INVALID_ENTITY_ID		= std::numeric_limits<EntityId>::max();
-constexpr ComponentId INVALID_COMPONENT_ID	= std::numeric_limits<ComponentId>::max();
+constexpr EntityId		INVALID_ENTITY_ID		= std::numeric_limits<EntityId>::max();
+constexpr ComponentId	INVALID_COMPONENT_ID	= std::numeric_limits<ComponentId>::max();
 
 const unsigned int MAX_COMPONENTS = 32;
 
