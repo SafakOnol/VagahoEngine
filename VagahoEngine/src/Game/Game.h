@@ -17,14 +17,13 @@ private:
 	double			deltaTime;
 	SDL_Window*		window;
 	SDL_Renderer*	renderer;
+	SDL_Rect		camera;
 
 	std::unique_ptr<ECSManager> ecsManager;
 	std::unique_ptr<AssetManager> assetManager;
 	std::unique_ptr<EventManager> eventManager;
 
 	std::vector<std::vector<int>> mapData;
-	int mapWidth;
-	int mapHeight;
 	
 
 public:
@@ -41,7 +40,9 @@ public:
 	void Run();
 	void Destroy();
 
-	int windowWidth;
-	int windowHeight;
+	static int windowWidth;
+	static int windowHeight;
+	static int mapWidth;
+	static int mapHeight;
 };
 

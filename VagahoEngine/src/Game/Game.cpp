@@ -7,6 +7,7 @@
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/KeyboardControlComponent.h"
+#include "../Components/FollowCameraComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
@@ -14,6 +15,7 @@
 #include "../Systems/CollisionRenderSystem.h"
 #include "../Systems/DamageSystem.h"
 #include "../Systems/KeyboardControlSystem.h"
+#include "../Systems/CameraMovementSystem.h"
 
 
 #include <SDL_image.h>
@@ -24,7 +26,10 @@
 #include <string>
 #include <sstream>
 
-
+int Game::windowWidth;
+int Game::windowHeight;
+int Game::mapWidth;
+int Game::mapHeight;
 
 Game::Game() {
 	bGameIsRunning	= false;
@@ -79,6 +84,13 @@ void Game::Initialize() {
 	}
 	// Real Fullscreen mode (change video mode from os to app
 	// SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+
+	// Initialize the camera view with the entire screen area
+	camera.x = 0;
+	camera.y = 0;
+	camera.w = windowWidth;
+	camera.h = windowHeight;
+
 	bGameIsRunning = true;
 }
 
@@ -96,6 +108,7 @@ void Game::LoadLevel(int level) {
 	ecsManager->AddSystem<CollisionRenderSystem>();
 	ecsManager->AddSystem<DamageSystem>();
 	ecsManager->AddSystem<KeyboardControlSystem>();
+	ecsManager->AddSystem<CameraMovementSystem>();
 
 
 	// Add assets to asset manager
@@ -114,23 +127,36 @@ void Game::LoadLevel(int level) {
 	std::ifstream mapFile("./assets/tilemaps/jungle.map");
 	std::string line;
 	
+	// Read the tilemap data from a file
 	while (std::getline(mapFile, line)) {
+		// Create a vector to store the tile IDs for each row
 		std::vector<int> row;
+		// Create a string stream to parse the line
 		std::istringstream iss(line);
+		// Create a string stream to parse the line
 		int tileId;
+		// Read tile IDs from the string stream
 		while (iss >> tileId) {
+			// Add the tile ID to the current row
 			row.push_back(tileId);
+			// Check if the next character is a comma (CSV format)
 			if (iss.peek() == ',')
-				iss.ignore();
+				iss.ignore(); // Skip the comma
 		}
+		// Add the completed row to the mapData
 		mapData.push_back(row);
 	}
-	mapFile.close();
-
+	
+	// Iterate through the mapData to create tile entities
 	for (int y = 0; y < mapData.size(); y++) {
 		for (int x = 0; x < mapData[y].size(); x++) {
+			// Get the tile ID for the current position
 			int tileId = mapData[y][x];
+			// Calculate the y-coordinate of the tile in the tileset image
+			// by dividing the tileId by the number of columns and multiplying by the tile size
 			int srcRectY = (tileId / TILESET_COLUMNS) * TILESIZE;
+			// Calculate the x-coordinate of the tile in the tileset image
+			// by taking the remainder of tileId divided by the number of columns and multiplying by the tile size
 			int srcRectX = (tileId % TILESET_COLUMNS) * TILESIZE;
 
 			Entity tile = ecsManager->CreateEntity();
@@ -138,6 +164,9 @@ void Game::LoadLevel(int level) {
 			tile.AddComponent<SpriteComponent>("tilemap-image", TILESIZE, TILESIZE, 0, srcRectX, srcRectY);
 		}
 	}
+	mapFile.close();
+	mapWidth = mapData[0].size() * TILESIZE * tileScale;
+	mapHeight = mapData.size() * TILESIZE * tileScale;
 
 	// Load Entities and Components
 	Entity tank01 = ecsManager->CreateEntity();
@@ -159,7 +188,7 @@ void Game::LoadLevel(int level) {
 	chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 2);
 	chopper.AddComponent<AnimationComponent>(2, 15, true);
 	chopper.AddComponent<KeyboardControlComponent>(glm::vec2(0, -150), glm::vec2(150, 0), glm::vec2(0, 150), glm::vec2(-150, 0));
-
+	chopper.AddComponent<FollowCameraComponent>();
 
 	Entity radarScreen = ecsManager->CreateEntity();
 	radarScreen.AddComponent<TransformComponent>(glm::vec2(windowWidth - (3*64), windowHeight - (3*64)), glm::vec2(2.0, 2.0), 0.0);
@@ -225,6 +254,7 @@ void Game::Update() {
 	ecsManager->GetSystem<CollisionSystem>().Update(eventManager);
 	ecsManager->GetSystem<DamageSystem>().Update();
 	ecsManager->GetSystem<KeyboardControlSystem>().Update();
+	ecsManager->GetSystem<CameraMovementSystem>().Update(camera);
 
 
 	//////////////////////////////////////////////////////
@@ -241,7 +271,7 @@ void Game::Render() {
 	SDL_RenderClear(renderer);
 
 	// Update all systems that requires rendering
-	ecsManager->GetSystem<RenderSystem>().Update(renderer, assetManager);
+	ecsManager->GetSystem<RenderSystem>().Update(renderer, assetManager, camera);
 	if (bDebugState) {
 		ecsManager->GetSystem<CollisionRenderSystem>().Update(renderer);
 	}

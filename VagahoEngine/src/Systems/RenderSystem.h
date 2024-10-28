@@ -16,7 +16,7 @@ public:
 		AddRequiredComponent<SpriteComponent>();
 	}
 
-	void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& assetManager) {
+	void Update(SDL_Renderer* renderer, std::unique_ptr<AssetManager>& assetManager, SDL_Rect& camera) {
 		// Create a vector with both Sprite and Transform component of all entities
 
 		struct RenderableEntity {
@@ -49,8 +49,8 @@ public:
 			SDL_Rect srcRect = sprite.srcRect;
 			// Set the destination rectangle woth the x,y position
 			SDL_Rect destRect = {
-				static_cast<int>(transform.position.x),
-				static_cast<int>(transform.position.y),
+				static_cast<int>(transform.position.x - camera.x),
+				static_cast<int>(transform.position.y - camera.y),
 				static_cast<int>(sprite.width * transform.scale.x),
 				static_cast<int>(sprite.height * transform.scale.y)
 			};
