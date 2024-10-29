@@ -59,8 +59,8 @@ void Game::Initialize() {
 	// Create SDL display mode struct and populate with get current display mode function
 	SDL_DisplayMode displayMode;
 	SDL_GetCurrentDisplayMode(0, &displayMode);
-	windowWidth		= 1600;
-	windowHeight	= 1200;
+	windowWidth		= 800;
+	windowHeight	= 600;
 	//windowWidth = displayMode.w;
 	//windowHeight = displayMode.h;
 	//windowWidth		= 3440;
@@ -193,8 +193,8 @@ void Game::LoadLevel(int level) {
 	Entity radarScreen = ecsManager->CreateEntity();
 	radarScreen.AddComponent<TransformComponent>(glm::vec2(windowWidth - (3*64), windowHeight - (3*64)), glm::vec2(2.0, 2.0), 0.0);
 	radarScreen.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
-	radarScreen.AddComponent<SpriteComponent>("radar-image", 64, 64, 3);
-	radarScreen.AddComponent<AnimationComponent>(8, 8, true);
+	//radarScreen.AddComponent<SpriteComponent>("radar-image", 64, 64, 3);
+	//radarScreen.AddComponent<AnimationComponent>(8, 8, true);
 
 }
 
