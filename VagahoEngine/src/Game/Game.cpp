@@ -9,6 +9,7 @@
 #include "../Components/KeyboardControlComponent.h"
 #include "../Components/FollowCameraComponent.h"
 #include "../Components/ProjectileEmitterComponent.h"
+#include "../Components/HealthComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
@@ -193,6 +194,7 @@ void Game::LoadLevel(int level) {
 	tank01.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
 	tank01.AddComponent<BoxColliderComponent>(32, 32);
 	tank01.AddComponent<ProjectileEmitterComponent>(glm::vec2(100.0, 0.0), 1000, 10000, 0, false);
+	tank01.AddComponent<HealthComponent>();
 	//LOG_INFO("Entity #" + std::to_string(tank01.GetId()) + " created");
 
 	Entity truck01 = ecsManager->CreateEntity();
@@ -201,6 +203,7 @@ void Game::LoadLevel(int level) {
 	truck01.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
 	truck01.AddComponent<BoxColliderComponent>(32, 32);
 	truck01.AddComponent<ProjectileEmitterComponent>(glm::vec2(0.0, 100.0), 500, 10000, 0, false);
+	truck01.AddComponent<HealthComponent>();
 	//LOG_INFO("Entity #" + std::to_string(truck01.GetId()) + " created");
 	
 	Entity chopper = ecsManager->CreateEntity();
@@ -210,6 +213,7 @@ void Game::LoadLevel(int level) {
 	chopper.AddComponent<AnimationComponent>(2, 15, true);
 	chopper.AddComponent<KeyboardControlComponent>(glm::vec2(0, -150), glm::vec2(150, 0), glm::vec2(0, 150), glm::vec2(-150, 0));
 	chopper.AddComponent<FollowCameraComponent>();
+	chopper.AddComponent<HealthComponent>();
 	//LOG_INFO("Entity #" + std::to_string(chopper.GetId()) + " created");
 
 	Entity radarScreen = ecsManager->CreateEntity();
