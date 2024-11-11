@@ -8,6 +8,7 @@
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/KeyboardControlComponent.h"
 #include "../Components/FollowCameraComponent.h"
+#include "../Components/ProjectileEmitterComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
 #include "../Systems/AnimationSystem.h"
@@ -16,6 +17,7 @@
 #include "../Systems/DamageSystem.h"
 #include "../Systems/KeyboardControlSystem.h"
 #include "../Systems/CameraMovementSystem.h"
+#include "../Systems/ProjectileEmitSystem.h"
 
 
 #include <SDL_image.h>
@@ -122,6 +124,7 @@ void Game::LoadLevel(int level) {
 	ecsManager->AddSystem<DamageSystem>();
 	ecsManager->AddSystem<KeyboardControlSystem>();
 	ecsManager->AddSystem<CameraMovementSystem>();
+	ecsManager->AddSystem<ProjectileEmitSystem>();
 
 
 	// Add assets to asset manager
@@ -130,6 +133,7 @@ void Game::LoadLevel(int level) {
 	assetManager->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
 	assetManager->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
 	assetManager->AddTexture(renderer, "truck-image", "./assets/images/truck-ford-left.png");
+	assetManager->AddTexture(renderer, "bullet-image", "./assets/images/bullet.png");
 
 	// TODO: Load tilemap
 	const int TILESET_COLUMNS	= 10;	// Change this to match tileset grid
@@ -188,30 +192,32 @@ void Game::LoadLevel(int level) {
 	tank01.AddComponent<RigidbodyComponent>(glm::vec2(10.0, 0.0));
 	tank01.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
 	tank01.AddComponent<BoxColliderComponent>(32, 32);
-	LOG_INFO("Entity #" + std::to_string(tank01.GetId()) + " created");
+	tank01.AddComponent<ProjectileEmitterComponent>(glm::vec2(100.0, 0.0), 1000, 10000, 0, false);
+	//LOG_INFO("Entity #" + std::to_string(tank01.GetId()) + " created");
 
 	Entity truck01 = ecsManager->CreateEntity();
 	truck01.AddComponent<TransformComponent>(glm::vec2(300.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
-	truck01.AddComponent<RigidbodyComponent>(glm::vec2(-10.0, 0.0));
+	truck01.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
 	truck01.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
 	truck01.AddComponent<BoxColliderComponent>(32, 32);
-	LOG_INFO("Entity #" + std::to_string(truck01.GetId()) + " created");
+	truck01.AddComponent<ProjectileEmitterComponent>(glm::vec2(0.0, 100.0), 500, 10000, 0, false);
+	//LOG_INFO("Entity #" + std::to_string(truck01.GetId()) + " created");
 	
 	Entity chopper = ecsManager->CreateEntity();
-	chopper.AddComponent<TransformComponent>(glm::vec2(520.0, 600.0), glm::vec2(2.0, 2.0), 0.0);
+	chopper.AddComponent<TransformComponent>(glm::vec2(120.0, 200.0), glm::vec2(2.0, 2.0), 0.0);
 	chopper.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
 	chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 2);
 	chopper.AddComponent<AnimationComponent>(2, 15, true);
 	chopper.AddComponent<KeyboardControlComponent>(glm::vec2(0, -150), glm::vec2(150, 0), glm::vec2(0, 150), glm::vec2(-150, 0));
 	chopper.AddComponent<FollowCameraComponent>();
-	LOG_INFO("Entity #" + std::to_string(chopper.GetId()) + " created");
+	//LOG_INFO("Entity #" + std::to_string(chopper.GetId()) + " created");
 
 	Entity radarScreen = ecsManager->CreateEntity();
 	radarScreen.AddComponent<TransformComponent>(glm::vec2(windowWidth - (3*64), windowHeight - (3*64)), glm::vec2(2.0, 2.0), 0.0);
 	radarScreen.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
 	radarScreen.AddComponent<SpriteComponent>("radar-image", 64, 64, 3, true);
 	radarScreen.AddComponent<AnimationComponent>(8, 8, true);
-	LOG_INFO("Entity #" + std::to_string(radarScreen.GetId()) + " created");
+	//LOG_INFO("Entity #" + std::to_string(radarScreen.GetId()) + " created");
 
 }
 
@@ -272,7 +278,7 @@ void Game::Update() {
 	ecsManager->GetSystem<DamageSystem>().Update();
 	ecsManager->GetSystem<KeyboardControlSystem>().Update();
 	ecsManager->GetSystem<CameraMovementSystem>().Update(camera);
-
+	ecsManager->GetSystem<ProjectileEmitSystem>().Update(ecsManager);
 
 	//////////////////////////////////////////////////////
 	/// END OF UPDATE
