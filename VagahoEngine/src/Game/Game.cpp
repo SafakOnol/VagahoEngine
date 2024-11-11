@@ -290,7 +290,7 @@ void Game::Render() {
 	// Update all systems that requires rendering
 	ecsManager->GetSystem<RenderSystem>().Update(renderer, assetManager, camera);
 	if (bDebugState) {
-		ecsManager->GetSystem<CollisionRenderSystem>().Update(renderer);
+		ecsManager->GetSystem<CollisionRenderSystem>().Update(renderer, camera);
 	}
 
 	SDL_RenderPresent(renderer);
