@@ -61,15 +61,13 @@ void Game::Initialize() {
 	SDL_GetCurrentDisplayMode(0, &displayMode);
 	windowWidth		= 800;
 	windowHeight	= 600;
-	//windowWidth = displayMode.w;
-	//windowHeight = displayMode.h;
-	//windowWidth		= 3440;
-	//windowHeight	= 1440;
+	//windowWidth   = displayMode.w;
+	//windowHeight  = displayMode.h;
 
 	window = SDL_CreateWindow(
 		"Vagaho Engine",
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
 		windowWidth,
 		windowHeight,
 		SDL_WINDOW_BORDERLESS
@@ -82,6 +80,21 @@ void Game::Initialize() {
 		LOG_ERROR("Error creating SDL renderer.");
 		return;
 	}
+
+	// Get the bounds of the primary display
+	if (SDL_GetDisplayBounds(0, &displayBounds) != 0) {
+		// Handle error
+		SDL_Log("Failed to get display bounds: %s", SDL_GetError());
+		return;
+	}
+
+	// Calculate the x-position for right alignment
+	int leftPosition = (displayBounds.w - windowWidth) *3 / 4;
+	int topPosition = (displayBounds.h - windowHeight) / 2;
+
+	// Set the window position
+	SDL_SetWindowPosition(window, leftPosition, topPosition);
+
 	// Real Fullscreen mode (change video mode from os to app
 	// SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
@@ -161,40 +174,44 @@ void Game::LoadLevel(int level) {
 
 			Entity tile = ecsManager->CreateEntity();
 			tile.AddComponent<TransformComponent>(glm::vec2(x * (tileScale * TILESIZE), y * (tileScale * TILESIZE)), glm::vec2(tileScale, tileScale), 0.0);
-			tile.AddComponent<SpriteComponent>("tilemap-image", TILESIZE, TILESIZE, 0, srcRectX, srcRectY);
+			tile.AddComponent<SpriteComponent>("tilemap-image", TILESIZE, TILESIZE, 0, false, srcRectX, srcRectY);
 		}
 	}
 	mapFile.close();
+	LOG_INFO("Tilemap generated");
 	mapWidth = mapData[0].size() * TILESIZE * tileScale;
 	mapHeight = mapData.size() * TILESIZE * tileScale;
 
 	// Load Entities and Components
 	Entity tank01 = ecsManager->CreateEntity();
 	tank01.AddComponent<TransformComponent>(glm::vec2(20.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
-	tank01.AddComponent<RigidbodyComponent>(glm::vec2(20.0, 0.0));
+	tank01.AddComponent<RigidbodyComponent>(glm::vec2(10.0, 0.0));
 	tank01.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
 	tank01.AddComponent<BoxColliderComponent>(32, 32);
-
+	LOG_INFO("Entity #" + std::to_string(tank01.GetId()) + " created");
 
 	Entity truck01 = ecsManager->CreateEntity();
 	truck01.AddComponent<TransformComponent>(glm::vec2(300.0, 20.0), glm::vec2(2.0, 2.0), 0.0);
-	truck01.AddComponent<RigidbodyComponent>(glm::vec2(-20.0, 0.0));
+	truck01.AddComponent<RigidbodyComponent>(glm::vec2(-10.0, 0.0));
 	truck01.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
 	truck01.AddComponent<BoxColliderComponent>(32, 32);
+	LOG_INFO("Entity #" + std::to_string(truck01.GetId()) + " created");
 	
 	Entity chopper = ecsManager->CreateEntity();
-	chopper.AddComponent<TransformComponent>(glm::vec2(520.0, 200.0), glm::vec2(2.0, 2.0), 0.0);
+	chopper.AddComponent<TransformComponent>(glm::vec2(520.0, 600.0), glm::vec2(2.0, 2.0), 0.0);
 	chopper.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
 	chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 2);
 	chopper.AddComponent<AnimationComponent>(2, 15, true);
 	chopper.AddComponent<KeyboardControlComponent>(glm::vec2(0, -150), glm::vec2(150, 0), glm::vec2(0, 150), glm::vec2(-150, 0));
 	chopper.AddComponent<FollowCameraComponent>();
+	LOG_INFO("Entity #" + std::to_string(chopper.GetId()) + " created");
 
 	Entity radarScreen = ecsManager->CreateEntity();
 	radarScreen.AddComponent<TransformComponent>(glm::vec2(windowWidth - (3*64), windowHeight - (3*64)), glm::vec2(2.0, 2.0), 0.0);
 	radarScreen.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
-	//radarScreen.AddComponent<SpriteComponent>("radar-image", 64, 64, 3);
-	//radarScreen.AddComponent<AnimationComponent>(8, 8, true);
+	radarScreen.AddComponent<SpriteComponent>("radar-image", 64, 64, 3, true);
+	radarScreen.AddComponent<AnimationComponent>(8, 8, true);
+	LOG_INFO("Entity #" + std::to_string(radarScreen.GetId()) + " created");
 
 }
 

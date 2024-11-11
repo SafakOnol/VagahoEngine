@@ -86,7 +86,7 @@ Entity ECSManager::CreateEntity() {
     entity.ecsManager = this;
     entitiesToCreate.insert(entity);  
 
-     LOG_INFO("Entity created with id = " + std::to_string(entityId));
+    //LOG_INFO("Entity created with id = " + std::to_string(entityId));
 
     return entity;    
 }

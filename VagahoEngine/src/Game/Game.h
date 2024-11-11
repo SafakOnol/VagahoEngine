@@ -18,6 +18,7 @@ private:
 	SDL_Window*		window;
 	SDL_Renderer*	renderer;
 	SDL_Rect		camera;
+	SDL_Rect		displayBounds;
 
 	std::unique_ptr<ECSManager> ecsManager;
 	std::unique_ptr<AssetManager> assetManager;
