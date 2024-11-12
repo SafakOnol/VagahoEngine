@@ -19,6 +19,7 @@
 #include "../Systems/KeyboardControlSystem.h"
 #include "../Systems/CameraMovementSystem.h"
 #include "../Systems/ProjectileEmitSystem.h"
+#include "../Systems/ProjectileLifecycleSystem.h"
 
 
 #include <SDL_image.h>
@@ -126,6 +127,7 @@ void Game::LoadLevel(int level) {
 	ecsManager->AddSystem<KeyboardControlSystem>();
 	ecsManager->AddSystem<CameraMovementSystem>();
 	ecsManager->AddSystem<ProjectileEmitSystem>();
+	ecsManager->AddSystem<ProjectileLifecycleSystem>();
 
 
 	// Add assets to asset manager
@@ -193,7 +195,7 @@ void Game::LoadLevel(int level) {
 	tank01.AddComponent<RigidbodyComponent>(glm::vec2(10.0, 0.0));
 	tank01.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
 	tank01.AddComponent<BoxColliderComponent>(32, 32);
-	tank01.AddComponent<ProjectileEmitterComponent>(glm::vec2(100.0, 0.0), 1000, 10000, 0, false);
+	tank01.AddComponent<ProjectileEmitterComponent>(glm::vec2(100.0, 0.0), 1000, 3000, 0, false);
 	tank01.AddComponent<HealthComponent>();
 	//LOG_INFO("Entity #" + std::to_string(tank01.GetId()) + " created");
 
@@ -202,7 +204,7 @@ void Game::LoadLevel(int level) {
 	truck01.AddComponent<RigidbodyComponent>(glm::vec2(0.0, 0.0));
 	truck01.AddComponent<SpriteComponent>("truck-image", 32, 32, 1);
 	truck01.AddComponent<BoxColliderComponent>(32, 32);
-	truck01.AddComponent<ProjectileEmitterComponent>(glm::vec2(0.0, 100.0), 500, 10000, 0, false);
+	truck01.AddComponent<ProjectileEmitterComponent>(glm::vec2(0.0, 100.0), 500, 5000, 0, false);
 	truck01.AddComponent<HealthComponent>();
 	//LOG_INFO("Entity #" + std::to_string(truck01.GetId()) + " created");
 	
@@ -279,10 +281,9 @@ void Game::Update() {
 	ecsManager->GetSystem<MovementSystem>().Update(deltaTime);
 	ecsManager->GetSystem<AnimationSystem>().Update();
 	ecsManager->GetSystem<CollisionSystem>().Update(eventManager);
-	ecsManager->GetSystem<DamageSystem>().Update();
-	ecsManager->GetSystem<KeyboardControlSystem>().Update();
 	ecsManager->GetSystem<CameraMovementSystem>().Update(camera);
 	ecsManager->GetSystem<ProjectileEmitSystem>().Update(ecsManager);
+	ecsManager->GetSystem<ProjectileLifecycleSystem>().Update();
 
 	//////////////////////////////////////////////////////
 	/// END OF UPDATE
