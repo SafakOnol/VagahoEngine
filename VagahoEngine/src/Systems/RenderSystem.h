@@ -6,7 +6,7 @@
 #include "../Components/SpriteComponent.h"
 #include "../AssetManager/AssetManager.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <algorithm>
 
 class RenderSystem : public System {

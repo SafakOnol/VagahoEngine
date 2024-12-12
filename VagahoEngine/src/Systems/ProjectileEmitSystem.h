@@ -8,7 +8,7 @@
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/ProjectileComponent.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class ProjectileEmitSystem : public System {
 public:
