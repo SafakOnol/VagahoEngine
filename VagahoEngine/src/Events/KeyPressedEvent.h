@@ -3,7 +3,7 @@
 #include "../ECS/ECS.h"
 #include "../EventManager/Event.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class KeyPressedEvent : public Event {
 public:

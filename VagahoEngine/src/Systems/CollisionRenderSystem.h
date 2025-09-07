@@ -5,7 +5,7 @@
 #include "../Components/TransformComponent.h"
 #include "../Systems/CollisionSystem.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class CollisionRenderSystem : public System {
 public:

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 struct BoxColliderComponent {
 	int width;
